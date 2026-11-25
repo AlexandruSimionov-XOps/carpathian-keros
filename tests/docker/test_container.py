@@ -117,6 +117,18 @@ def test_app_venv_has_no_package_installer(image):
     assert result.returncode != 0
 
 
+def test_image_has_no_package_installer_at_all(image):
+    """The base image's own pip vendors urllib3/msgpack and ships setuptools wheels: Trivy flagged HIGH CVEs there,
+    in tools the app never runs. Regression for that finding: neither pip nor ensurepip's bundled wheels remain."""
+    script = (
+        "import importlib.util, pathlib, sysconfig; "
+        "bundled = pathlib.Path(sysconfig.get_paths()['stdlib']) / 'ensurepip' / '_bundled'; "
+        "print(importlib.util.find_spec('pip') is None, not any(bundled.glob('*.whl')))"
+    )
+    out = docker("run", "--rm", "--entrypoint", "/usr/local/bin/python3", image, "-c", script).stdout.split()
+    assert out == ["True", "True"]
+
+
 def test_image_size_stays_small(image):
     size = int(docker("image", "inspect", "-f", "{{.Size}}", image).stdout)
     assert size < MAX_IMAGE_BYTES, f"{size / 1e6:.0f} MB"

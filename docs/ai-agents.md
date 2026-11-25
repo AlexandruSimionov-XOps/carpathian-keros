@@ -52,7 +52,7 @@ The project's governing principles (SOLID, modular architecture, test-first deve
 
 ## Verification checklist
 
-Run these after any change. Everything apart from the e2e tests is offline.
+Run these after any change. Everything apart from the e2e and container tests is offline. CI (`.github/workflows/ci.yml`) runs the same checks on every PR; [setup.md → Continuous integration](setup.md#continuous-integration) shows the local command for each CI job, so a red check can be reproduced before pushing again.
 
 **1. Tests + lint** (required for every change)
 ```bash

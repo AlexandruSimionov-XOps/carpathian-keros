@@ -37,6 +37,28 @@ pip-audit -r requirements.txt            # known-vulnerability scan (before rele
 
 See [AGENTS.md](../AGENTS.md), Article III, for the test-first workflow, and [ai-agents.md](ai-agents.md#verification-checklist) for the full checklist.
 
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every pull request into `development` or `main`, and on pushes to them. Six jobs run in parallel, and all must be green. Each can be reproduced locally with the same tool version:
+
+| CI job | What it checks | Run it locally |
+|---|---|---|
+| **Lint (ruff)** | Code style and common bugs | `ruff check . && ruff format --check .` |
+| **Tests (pytest + Node)** | Unit, API, PDF and JS tests, offline | `pytest` (needs `fonts-dejavu-core` for the PDF tests) |
+| **Dependency audit** | Known vulnerabilities in Python packages | `pip-audit -r requirements.txt -r requirements-e2e.txt` |
+| **Secret scan** | Secrets anywhere in the git history | `docker run --rm -v "$PWD:/repo:ro" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact` |
+| **Docker image** | Dockerfile lint → build → container tests → vulnerability scan | `docker run --rm -i -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" hadolint/hadolint:v2.15.1 < Dockerfile`<br>`docker build -t carpathian-keros:ci . && CK_DOCKER=1 CK_IMAGE=carpathian-keros:ci pytest -m docker`<br>`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.76.2 image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed carpathian-keros:ci` |
+| **Browser tests** | Desktop and phone layouts, interactions, no console or CSP errors | `pip install -r requirements-e2e.txt && playwright install chromium && CK_E2E=1 pytest -m e2e` |
+
+(The workflow pins each tool image by digest; the tags above are the same versions.)
+
+**Supply-chain rules** (checked by `tests/unit/test_ci_config.py`):
+- **Pinning:** actions pinned to full commit SHAs; tool images and the Docker base image pinned by digest.
+- **Token:** the workflow token is read-only.
+- **Dependabot** (`.github/dependabot.yml`) opens weekly update PRs into `development`, and CI vets each one.
+
+**Make CI block merges:** in GitHub → Settings → Rules → Rulesets, for both `development` and `main`, add *Require status checks to pass* and select the six job names above. GitHub only lists them after the workflow has run once, i.e. after the first PR with this file.
+
 ## Versioning
 
 The app version lives in **`pyproject.toml`** (`[project].version`), and changes are recorded in **`CHANGELOG.md`**. A test fails if the two disagree. Bump rules (SemVer, with the public contracts listed) are in AGENTS.md, Article IV.

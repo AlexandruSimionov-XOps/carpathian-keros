@@ -1,0 +1,4 @@
+# Browser tests (tests/e2e). Separate from requirements-dev.txt because Playwright is large and only CI's e2e job
+# (and developers running CK_E2E=1 pytest -m e2e) need it. After installing: playwright install chromium
+-r requirements-dev.txt
+playwright==1.65.2

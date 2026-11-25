@@ -4,6 +4,8 @@
 
 # Carpathian Keros
 
+[![CI](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml/badge.svg?branch=development)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml)
+
 A bilingual (Romanian / English) weather dashboard for Romania's 319 official cities and towns (the [Wikipedia list](https://ro.wikipedia.org/wiki/Lista_ora%C8%99elor_din_Rom%C3%A2nia)). Search suggests matching cities as you type. It shows current conditions, a 24-hour hourly chart and a 7-day forecast, and you can download any report as a PDF in either language.
 
 Data comes from [Open-Meteo](https://open-meteo.com/), which needs no API key.

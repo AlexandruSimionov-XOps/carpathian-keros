@@ -46,7 +46,7 @@ ruff check . && ruff format --check .
 CK_E2E=1 pytest -m e2e                  # optional browser tests (needs Playwright + network)
 ```
 
-Version: **1.1.0** (`pyproject.toml`). History: [`CHANGELOG.md`](CHANGELOG.md). Project rules for contributors and AI agents: [`AGENTS.md`](AGENTS.md).
+Version: **1.1.1** (`pyproject.toml`). History: [`CHANGELOG.md`](CHANGELOG.md). Project rules for contributors and AI agents: [`AGENTS.md`](AGENTS.md).
 
 ## Endpoints
 

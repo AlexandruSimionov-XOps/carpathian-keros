@@ -33,6 +33,32 @@ def server_url():
     httpd.shutdown()
 
 
+def _lowercase_header_names(app):
+    """Like Cloud Run's HTTP/2 front end, which sends every header name in lowercase."""
+
+    def wrapped(environ, start_response):
+        def lower_start(status, headers, exc_info=None):
+            return start_response(status, [(name.lower(), value) for name, value in headers], exc_info)
+
+        return app(environ, lower_start)
+
+    return wrapped
+
+
+def test_header_checks_ignore_header_name_case():
+    """Regression: the first deploy failed with "Content-Security-Policy missing" because the headers were copied into
+    a case-sensitive dict, and Cloud Run (HTTP/2) sends `content-security-policy`."""
+    from app import APP_VERSION
+
+    app, _ = build_app()
+    httpd = make_server("127.0.0.1", 0, _lowercase_header_names(app), handler_class=_QuietHandler)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    try:
+        run_checks(f"http://127.0.0.1:{httpd.server_port}", APP_VERSION, attempts=1)
+    finally:
+        httpd.shutdown()
+
+
 def test_passes_against_a_healthy_app_with_the_expected_version(server_url):
     from app import APP_VERSION
 

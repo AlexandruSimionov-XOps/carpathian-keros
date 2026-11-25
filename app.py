@@ -56,6 +56,11 @@ SECURITY_HEADERS = {
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
 }
 
+# HSTS: once a browser has seen the site over HTTPS, it refuses plain HTTP for a year. Sent only on HTTPS requests:
+# Cloud Run terminates TLS in front of the app and says so in X-Forwarded-Proto; localhost and Docker stay plain HTTP.
+# No includeSubDomains/preload: *.cloud.run and *.run.app are Google's shared domains, not ours.
+HSTS_HEADER = "max-age=31536000"
+
 # Public, user-safe text for server-side failures; the details go to the log (Article V.1).
 _PUBLIC_5XX_MESSAGE = "The weather service is temporarily unavailable"
 
@@ -110,6 +115,8 @@ def create_app(
     def add_security_headers(response):
         for name, value in SECURITY_HEADERS.items():
             response.headers.setdefault(name, value)
+        if request.is_secure or request.headers.get("X-Forwarded-Proto") == "https":
+            response.headers.setdefault("Strict-Transport-Security", HSTS_HEADER)
         return response
 
     @app.get("/")

@@ -5,6 +5,7 @@
 # Carpathian Keros
 
 [![Build, Test & Scan](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml/badge.svg?branch=development)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml)
+[![Deploy to Cloud Run](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/deploy.yml/badge.svg?event=push)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/deploy.yml)
 [![Release](https://img.shields.io/github/v/release/AlexandruSimionov-XOps/carpathian-keros?sort=semver)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/releases)
 [![License: MIT](https://img.shields.io/github/license/AlexandruSimionov-XOps/carpathian-keros)](LICENSE)
 [![Python 3.14](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white)](pyproject.toml)
@@ -71,6 +72,13 @@ Production image: gunicorn, a non-root user, the PDF fonts installed, and an all
 ## Deployment
 
 The target is **Google Cloud Run** (europe-west1, free tier), at `https://carpathian-keros.cloud.run`. All Google Cloud resources are defined with **OpenTofu** in [`infra/`](infra/): Cloud Run, Artifact Registry, Workload Identity Federation (GitHub deploys **without any stored key**) and a budget alert, all tested with a mocked provider in CI. The step-by-step guide is [docs/infrastructure.md](docs/infrastructure.md).
+
+**Releases deploy themselves.** Pushing a `v*` tag runs [`deploy.yml`](.github/workflows/deploy.yml), which deploys blue/green:
+- build the image and scan it with Trivy
+- push it with keyless authentication
+- deploy it as a **no-traffic candidate** and smoke-test the candidate's own URL
+- only then move all traffic to it, and verify the public URL
+- roll back automatically if that last check fails
 
 ## Structure
 

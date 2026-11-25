@@ -173,8 +173,7 @@ Every response, including errors and static files, carries:
 | `X-Frame-Options` | `DENY` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
 | `Permissions-Policy` | camera, microphone, geolocation and payment disabled |
-
-`Strict-Transport-Security` is left to the TLS-terminating reverse proxy.
+| `Strict-Transport-Security` | `max-age=31536000`, **only on requests that arrived over HTTPS** (`X-Forwarded-Proto: https`, as Cloud Run sets it). Plain HTTP (localhost, Docker) never gets it. No `includeSubDomains`/`preload`, because `*.cloud.run` and `*.run.app` are Google's shared domains. |
 
 ## Caching behaviour
 

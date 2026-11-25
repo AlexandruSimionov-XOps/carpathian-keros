@@ -6,6 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+- **Continuous deployment** (`.github/workflows/deploy.yml`, *Deploy to Cloud Run*). A `v*` tag (or a manual run on `main`) deploys **blue/green**:
+  - checks the tag against the `pyproject.toml` version, then builds and Trivy-scans the image
+  - pushes it with Workload Identity Federation (no keys or secrets)
+  - deploys a **no-traffic candidate**, smoke-tests its own URL, then moves 100% of the traffic to it
+  - verifies `https://carpathian-keros.cloud.run`, and **rolls back automatically** if that fails
+  - runs in a `production` environment and is never cancelled halfway
+  - adds a deploy status badge to the README
+- `scripts/smoke_test.py` checks `/health` for the expected version, the page and its security headers, the weather API and the PDF export, with retries. It's used on the candidate and the public URL, and runnable by hand.
+- `infra/run.tf` ignores the traffic split too, so `tofu apply` never undoes a deploy or a rollback.
+
+### Security
+- **HSTS** (`Strict-Transport-Security: max-age=31536000`) on responses to HTTPS requests, as Cloud Run serves them. Plain local HTTP is unaffected.
+
 ### Changed
 - **Browser tests no longer depend on Open-Meteo.** They run the real app with the recorded forecast (`tests/e2e/fake_server.py`, the unit tests' `FakeSession`), so an Open-Meteo outage or a rate limit on shared CI runners can't fail them. Previously a slow answer made all 23 time out (6 minutes). Verified by running them with Open-Meteo blocked.
 - **CI caches Chromium** for the browser tests. The test server's log is kept and shown if it fails to start (it used to be discarded).

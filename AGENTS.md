@@ -238,7 +238,7 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 
 #### V.4 Code review
 
-- **Every change reaches `main` through a reviewed pull request** (Article VI). No direct pushes, and no self-merging by agents. A human approves the merge.
+- **Every change reaches `development`, and later `main`, through a reviewed pull request** (Article VI). No direct pushes to either, and no self-merging by agents. A human approves the merge.
 - **Review checklist.** Authors run it before asking; reviewers run it again:
   - [ ] It follows Articles I–II: responsibilities, dependency direction, no new cycles
   - [ ] Tests were written first and pass (Article III). Bugs come with a regression test
@@ -284,8 +284,19 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 
 ### Article VI — Git branching strategy
 
-**Model:** trunk-based development with short-lived branches.
-- `main` is always releasable and protected: no direct commits, no force-pushes.
+**Model:** two long-lived branches, short-lived work branches.
+
+```
+feature/… fix/… docs/… (and the other types below) ──PR (squash)──▶ development ──PR (merge commit)──▶ main ──▶ tag vX.Y.Z
+hotfix/… (from main) ──PR──▶ main ──▶ tag ──▶ merge main back into development
+```
+
+| Branch | Role | Rules |
+|---|---|---|
+| `main` | What is released. Every commit on it is a tagged release or a hotfix | Protected: PRs only, no direct commits, no force-pushes. Receives PRs only from `development` and `hotfix/*` |
+| `development` | Integration branch: the next release, always passing tests | Protected the same way. Receives PRs from every work branch |
+| work branches | One change each, named `<type>/<description>` (below) | Branch from `development`, PR back into `development`, delete after merge |
+
 - Every change goes through a branch and a pull request (V.4).
 
 **Branch names follow `<type>/<short-description>`:**
@@ -297,7 +308,7 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 |---|---|---|---|---|
 | `feature/` | New user-visible capability | `feature/city-autocomplete` | `feat:` | MINOR |
 | `fix/` | Bug fix via the normal release flow | `fix/negative-temperature-rounding` | `fix:` | PATCH |
-| `hotfix/` | Urgent production fix, branched from the latest release tag, merged to `main` and tagged straight away | `hotfix/pdf-crash-missing-font` | `fix:` | PATCH |
+| `hotfix/` | Urgent fix for what's released. **The only work branch that starts from `main`**; PR into `main`, tag straight away, then merge `main` back into `development` | `hotfix/pdf-crash-missing-font` | `fix:` | PATCH |
 | `docs/` | Documentation only | `docs/api-cities-endpoint` | `docs:` | none |
 | `refactor/` | Internal restructuring, no behaviour change | `refactor/extract-autocomplete-module` | `refactor:` | PATCH |
 | `test/` | Adding or fixing tests only | `test/regression-country-code-filter` | `test:` | none |
@@ -308,19 +319,25 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 | `i18n/` | Translation additions or corrections | `i18n/hungarian-language` | `feat:` / `fix:` | MINOR / PATCH |
 | `ci/` | CI/CD pipelines and workflows | `ci/pytest-on-pull-request` | `ci:` | none |
 | `chore/` | Tooling and housekeeping not covered above | `chore/add-ruff-config` | `chore:` | none |
-| `release/` | Preparing a release: version bump, changelog | `release/1.2.0` | `chore(release):` | — |
+| `release/` | Preparing a release on `development`: version bump, finalize `CHANGELOG.md` | `release/1.2.0` | `chore(release):` | — |
 | `experiment/` | Spikes and prototypes. **Never merged**; the result is re-done on a proper branch | `experiment/leaflet-map` | — | — |
 
 **Workflow:**
-1. Branch from an up-to-date `main` (hotfixes branch from the latest `vX.Y.Z` tag).
-2. Keep branches small and short-lived (aim for under a few days). Rebase on `main` to stay current, never merge `main` into your branch.
-3. Open a PR whose title is a Conventional Commit (e.g. `feat: add city autocomplete`). Mark breaking changes with `!` (`feat!: ...`) and a `BREAKING CHANGE:` footer.
-4. Merge with **squash merge** once review (V.4) and checks pass, then delete the branch.
-5. Releases: merge a `release/X.Y.Z` PR that bumps the version and finalizes `CHANGELOG.md`, then tag `vX.Y.Z` on `main`. Hotfix merges are tagged immediately.
+1. **Start** from an up-to-date `development`: `git switch development && git pull`, then `git switch -c <type>/<description>`. (Hotfixes start from `main`.)
+2. **Stay current:** keep branches small and short-lived (aim for under a few days). Rebase on `development` to pick up new work; never merge `development` into your branch.
+3. **Open a PR into `development`** whose title is a Conventional Commit (e.g. `feat: add city autocomplete`). Mark breaking changes with `!` (`feat!: ...`) and a `BREAKING CHANGE:` footer. Add a line under `[Unreleased]` in `CHANGELOG.md` in the same PR.
+4. **Squash-merge** into `development` once review (V.4) and checks pass, then delete the branch. One commit per change keeps `development` readable.
+5. **Release:**
+   1. On `development`, merge a `release/X.Y.Z` PR that bumps `version` in `pyproject.toml` and moves `[Unreleased]` under `## [X.Y.Z] - <date>` in `CHANGELOG.md`.
+   2. Open a PR **`development` → `main`** titled `chore(release): vX.Y.Z`, and merge it with a **merge commit, never squash**. Squashing here gives `main` commits that `development` doesn't have, so the two drift apart and every later release PR shows old changes again.
+   3. Tag on `main`: `git switch main && git pull && git tag -a vX.Y.Z -m "Carpathian Keros vX.Y.Z" && git push origin vX.Y.Z`, then publish a GitHub Release from the tag.
+6. **Hotfix:** `hotfix/*` from `main` → PR into `main` → tag the PATCH version → merge `main` back into `development` (a PR `main` → `development`), so the fix isn't lost in the next release.
 
 **Agent rules:**
 - Commit, push, branch or open PRs **only when the user asks**.
-- When asked, always use a correctly named branch, never `main`, and follow the commit attribution the session specifies.
+- When asked, always use a correctly named branch that starts from `development` (or from `main` for a `hotfix/`). Never commit directly to `main` or `development`.
+- PRs target `development`, except `hotfix/*` and release PRs (`development` → `main`), which target `main`.
+- Follow the commit attribution the session or the user specifies.
 - Never rewrite published history.
 
 ---
@@ -329,7 +346,7 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 
 The constitution describes the target state. These items aren't in place yet. Don't pretend they are, and set them up when a task touches them (or when the user asks):
 
-- **The git repo exists, but GitHub isn't configured yet.** `main` holds the initial `v1.0.0` commit and tag (the one allowed direct commit to `main`; from here on Article VI applies). Still to do on GitHub: push, `main` branch protection or ruleset, squash-merge only, and CI.
+- **GitHub isn't fully configured yet.** The repo is on GitHub, with `main` (v1.0.0, the one allowed direct commit) and `development`, and Article VI applies. Still to do: rulesets on **both** `main` and `development` (PR required, no force-push, no deletion), and CI as a required check. Don't restrict the repo to squash-merge only: release PRs (`development` → `main`) need merge commits.
 - **No CI.** Until there is CI, run `pytest`, `ruff check .`, `ruff format --check .` and (before a release) `pip-audit -r requirements.txt` locally. Opt-in browser tests: `CK_E2E=1 pytest -m e2e`.
 - **Tailwind Play CDN.** It can't carry an SRI hash (its content isn't pinned by hash), and it injects `<style>`, so the CSP needs `style-src 'unsafe-inline'`. Fix: compile Tailwind with its CLI into `static/css/` and drop the CDN. ApexCharts also sets inline styles, so check whether `'unsafe-inline'` can actually be removed afterwards.
 - **No HSTS header.** It belongs on the TLS-terminating reverse proxy (`Strict-Transport-Security`), not in the app, which may run over plain HTTP locally.

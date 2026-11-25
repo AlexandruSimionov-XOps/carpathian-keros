@@ -6,6 +6,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Changed
+- **Branching strategy** (AGENTS.md, Article VI): work branches now merge into a new `development` integration branch (squash), and releases go `development` → `main` (merge commit), then a `vX.Y.Z` tag. Hotfixes branch from `main` and are merged back into `development`.
+
 ### Fixed
 - **Mobile layout** (phones up to 639 px wide). Tablets and desktop are unchanged.
   - Hourly chart axis labels overlapped (`15:0018:0021:00…`). They now show every 6 hours on phones.

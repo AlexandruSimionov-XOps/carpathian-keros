@@ -77,7 +77,7 @@ If no browser is installed, headless Chromium through Playwright works in a scra
 
 **4. PDF visual check** (for layout changes). `tests/pdf` already checks the page count, text, diacritics and rounding. For layout, also render page 1 to PNG (e.g. PyMuPDF in a scratch venv) for **both** languages and look at it for overflow.
 
-**5. Before a release:** `pip-audit -r requirements.txt`, bump `version` in `pyproject.toml`, and move the `[Unreleased]` notes in `CHANGELOG.md` under the new version. `test_version_is_declared_once_and_matches_the_changelog` enforces that the two match.
+**5. Before a release:** run `pip-audit -r requirements.txt`. Then, on a `release/X.Y.Z` branch from `development`, bump `version` in `pyproject.toml` and move the `[Unreleased]` notes in `CHANGELOG.md` under the new version. `test_version_is_declared_once_and_matches_the_changelog` enforces that the two match. After that PR is merged, open the `development` → `main` PR and merge it with a merge commit (not squash), then tag `vX.Y.Z` on `main`. The full flow is in AGENTS.md, Article VI.
 
 ## Common tasks
 

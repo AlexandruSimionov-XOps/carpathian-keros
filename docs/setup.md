@@ -37,6 +37,29 @@ pip-audit -r requirements.txt            # known-vulnerability scan (before rele
 
 See [AGENTS.md](../AGENTS.md), Article III, for the test-first workflow, and [ai-agents.md](ai-agents.md#verification-checklist) for the full checklist.
 
+## Continuous integration
+
+The **Build, Test & Scan** workflow (`.github/workflows/ci.yml`) runs on every pull request into `development` or `main`, and on pushes to them. Seven jobs run in parallel, and all must be green. Each can be reproduced locally with the same tool version:
+
+| CI job | What it checks | Run it locally |
+|---|---|---|
+| **Lint** | Code style, common bugs, formatting (ruff) | `ruff check . && ruff format --check .` |
+| **Unit & API Tests** | Unit, API, PDF and JS tests, offline (pytest + Node) | `pytest` (needs `fonts-dejavu-core` for the PDF tests) |
+| **Dependency Audit** | Known vulnerabilities in Python packages (pip-audit) | `pip-audit -r requirements.txt -r requirements-e2e.txt` |
+| **Secret Scan** | Secrets anywhere in the git history (gitleaks) | `docker run --rm -v "$PWD:/repo:ro" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact` |
+| **Container Build & Scan** | Dockerfile lint (hadolint) → build → container tests → vulnerability scan (Trivy) | `docker run --rm -i -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" hadolint/hadolint:v2.15.1 < Dockerfile`<br>`docker build -t carpathian-keros:ci . && CK_DOCKER=1 CK_IMAGE=carpathian-keros:ci pytest -m docker`<br>`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.76.2 image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed carpathian-keros:ci` |
+| **Infrastructure** | OpenTofu in `infra/`: format, validate, tests with a mocked Google provider, tflint, Trivy misconfiguration scan | See [infrastructure.md → Changing the infrastructure](infrastructure.md#changing-the-infrastructure) |
+| **Browser Tests** | Desktop and phone layouts, interactions, no console or CSP errors (Playwright), against the app with recorded weather | `pip install -r requirements-e2e.txt && playwright install chromium && CK_E2E=1 pytest -m e2e`, or with no local browser setup, see [ai-agents.md → Browser tests](ai-agents.md#verification-checklist) |
+
+(The workflow pins each tool image by digest; the tags above are the same versions.)
+
+**Supply-chain rules** (checked by `tests/unit/test_ci_config.py`):
+- **Pinning:** actions pinned to full commit SHAs; tool images and the Docker base image pinned by digest.
+- **Token:** the workflow token is read-only.
+- **Dependabot** (`.github/dependabot.yml`) opens weekly update PRs into `development`, and CI vets each one.
+
+**Make CI block merges:** in GitHub → Settings → Rules → Rulesets, for both `development` and `main`, add *Require status checks to pass* and select the seven job names above. GitHub only lists them after the workflow has run once, i.e. after the first PR with this file.
+
 ## Versioning
 
 The app version lives in **`pyproject.toml`** (`[project].version`), and changes are recorded in **`CHANGELOG.md`**. A test fails if the two disagree. Bump rules (SemVer, with the public contracts listed) are in AGENTS.md, Article IV.
@@ -89,13 +112,47 @@ done
 
 All four should print `200`.
 
-## Production deployment
+## Run with Docker
 
-The built-in Flask server is for development only. Use a WSGI server instead:
+The production image (`Dockerfile`) runs the app under **gunicorn** as an unprivileged user, with the PDF fonts installed. This is the same image that goes to Google Cloud Run.
 
 ```bash
-pip install gunicorn
-gunicorn -w 2 -b 0.0.0.0:8000 app:app
+docker build -t carpathian-keros --build-arg VERSION=1.1.0 .
+docker run --rm -p 8080:8080 carpathian-keros        # → http://localhost:8080
+curl http://localhost:8080/health                    # {"status":"ok","version":"1.1.0"}
+```
+
+On WSL2, `http://localhost:8080` also works from the Windows browser. Stop the container with **Ctrl+C**.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PORT` | `8080` | Listening port. Cloud Run sets it automatically |
+| `WEB_CONCURRENCY` | `2` | gunicorn worker processes |
+| `GUNICORN_THREADS` | `4` | Threads per worker (requests mostly wait on Open-Meteo) |
+| `CK_PDF_FONT`, `CK_PDF_FONT_BOLD` | DejaVu, installed in the image | Override the PDF font |
+
+**What's in the image** (about 275 MB; the registry stores it compressed):
+- **Build:** two stages. Dependencies are installed into a virtualenv in a build stage, and only that venv plus the app files reach the final image. pip is removed from the venv.
+- **Contents:** `.dockerignore` is an **allow-list** (`app.py`, `gunicorn.conf.py`, `pyproject.toml`, `requirements.txt`, `services/`, `templates/`, `static/`, `data/`). Tests, docs, `.git`, `.env` files and the brand originals never enter the build.
+- **User:** uid 10001, with no home and no shell. The app files are owned by root, so the process can't change its own code.
+- **Process:** gunicorn is PID 1 (exec form), so `docker stop` and Cloud Run's SIGTERM shut it down cleanly in about a second. Settings and their reasons are in `gunicorn.conf.py`.
+- **Health:** a `HEALTHCHECK` calls `GET /health`, which never contacts Open-Meteo, so an upstream outage can't make a healthy container look broken.
+
+**Container tests** build the image, run it, and check the health endpoint, the API, PDF diacritics, the non-root user, clean logs, image contents and size, and SIGTERM shutdown:
+```bash
+CK_DOCKER=1 pytest -m docker                                  # builds carpathian-keros:test first
+CK_DOCKER=1 CK_IMAGE=carpathian-keros:ci pytest -m docker     # or test an image built elsewhere (CI)
+```
+
+If `docker` says *permission denied … docker.sock*, your user isn't in the `docker` group yet (`sudo usermod -aG docker $USER`). On WSL, restart WSL after that (`wsl --shutdown` in PowerShell).
+
+## Production deployment
+
+Use the Docker image above (target: Google Cloud Run). Without Docker, run the app under gunicorn with the same settings as the image:
+
+```bash
+pip install -r requirements.txt        # includes gunicorn
+gunicorn -c gunicorn.conf.py app:app   # listens on $PORT (default 8080)
 ```
 
 Things to know:

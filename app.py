@@ -56,12 +56,30 @@ SECURITY_HEADERS = {
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
 }
 
+# HSTS: once a browser has seen the site over HTTPS, it refuses plain HTTP for a year. Sent only on HTTPS requests:
+# Cloud Run terminates TLS in front of the app and says so in X-Forwarded-Proto; localhost and Docker stay plain HTTP.
+# No includeSubDomains/preload: *.cloud.run and *.run.app are Google's shared domains, not ours.
+HSTS_HEADER = "max-age=31536000"
+
 # Public, user-safe text for server-side failures; the details go to the log (Article V.1).
 _PUBLIC_5XX_MESSAGE = "The weather service is temporarily unavailable"
 
 log = logging.getLogger("carpathian_keros")
 
 mimetypes.add_type("application/manifest+json", ".webmanifest")  # not in every OS mime database
+
+
+def _read_version(pyproject: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pyproject.toml")) -> str:
+    """The app version from pyproject.toml (the single source of truth, Article IV). Regex, not tomllib: Python 3.10."""
+    try:
+        with open(pyproject, encoding="utf-8") as fh:
+            match = re.search(r'^version\s*=\s*"([^"]+)"', fh.read(), re.M)
+    except OSError:
+        return "unknown"
+    return match.group(1) if match else "unknown"
+
+
+APP_VERSION = _read_version()
 
 
 def _slug(text: str) -> str:
@@ -97,11 +115,23 @@ def create_app(
     def add_security_headers(response):
         for name, value in SECURITY_HEADERS.items():
             response.headers.setdefault(name, value)
+        if request.is_secure or request.headers.get("X-Forwarded-Proto") == "https":
+            response.headers.setdefault("Strict-Transport-Security", HSTS_HEADER)
         return response
 
     @app.get("/")
     def index():
         return render_template("index.html", app_name=APP_NAME, presets=PRESET_CITIES, city_count=len(cities))
+
+    @app.get("/health")
+    def health():
+        """Liveness for Cloud Run probes, CI/CD smoke tests and Docker HEALTHCHECK. Deliberately never calls Open-Meteo:
+        an upstream outage must not make the platform restart a healthy container.
+
+        Not /healthz: Cloud Run's front end reserves paths ending in z; public requests to /healthz get Google's 404."""
+        resp = jsonify({"status": "ok", "version": APP_VERSION})
+        resp.cache_control.no_store = True
+        return resp
 
     @app.get("/favicon.ico")
     def favicon():

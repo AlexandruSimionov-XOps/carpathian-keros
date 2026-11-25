@@ -140,9 +140,26 @@ class TestReportExport:
         assert resp.json["error"] == "city_not_found"
 
 
+class TestHsts:
+    """Strict-Transport-Security only for requests that arrived over HTTPS (Cloud Run terminates TLS in front of the
+    app and says so in X-Forwarded-Proto). Never on plain HTTP: localhost and Docker must keep working."""
+
+    def test_sent_for_https_requests(self, client):
+        resp = client.get("/", headers={"X-Forwarded-Proto": "https"})
+        assert resp.headers["Strict-Transport-Security"] == "max-age=31536000"
+
+    def test_not_sent_over_plain_http(self, client):
+        assert "Strict-Transport-Security" not in client.get("/").headers
+
+    def test_on_api_responses_too(self, client):
+        resp = client.get("/health", headers={"X-Forwarded-Proto": "https"})
+        assert "Strict-Transport-Security" in resp.headers
+
+
 class TestSecurityHeaders:
     @pytest.mark.parametrize(
-        "path", ["/", "/api/cities", "/api/weather?city=Iasi", "/api/weather", "/api/report/export?city=Iasi"]
+        "path",
+        ["/", "/api/cities", "/api/weather?city=Iasi", "/api/weather", "/api/report/export?city=Iasi", "/health"],
     )
     def test_headers_on_every_response(self, client, path):
         headers = client.get(path).headers
@@ -176,6 +193,36 @@ class TestSecurityHeaders:
         resp = client.get("/api/weather", query_string={"city": "Iași"})
         assert "boom-detail" not in resp.get_data(as_text=True)
         assert "boom-detail" in caplog.text
+
+
+class TestHealth:
+    """Liveness endpoint for Cloud Run, CI/CD smoke tests and Docker HEALTHCHECK."""
+
+    def test_healthz_is_gone(self, client):
+        """Regression: Cloud Run's front end reserves /healthz; public requests got Google's 404, never the app."""
+        assert client.get("/healthz").status_code == 404
+
+    def test_no_route_ends_in_z(self, app):
+        """Cloud Run reserves "some paths ending with z" and Google advises avoiding all of them
+        (https://cloud.google.com/run/docs/issues). They'd work locally and silently 404 in production."""
+        paths = [rule.rule for rule in app.url_map.iter_rules()]
+        assert [p for p in paths if p.rstrip("/").endswith("z")] == []
+
+    def test_reports_ok_and_the_app_version(self, client):
+        tomllib = pytest.importorskip("tomllib")
+        version = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+        resp = client.get("/health")
+        assert resp.status_code == 200
+        assert resp.json == {"status": "ok", "version": version}
+
+    def test_never_calls_the_weather_provider(self, client, fake_session):
+        """A health check must not depend on Open-Meteo, or its outages would restart healthy containers."""
+        fake_session.error = requests.ConnectionError("down")
+        assert client.get("/health").status_code == 200
+        assert fake_session.calls == []
+
+    def test_is_not_cached(self, client):
+        assert "no-store" in client.get("/health").headers["Cache-Control"]
 
 
 def test_version_is_declared_once_and_matches_the_changelog():

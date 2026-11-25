@@ -31,7 +31,27 @@ The Carpathian Keros logos (`assets/brand/`) and the images generated from them 
 | Flask | BSD-3-Clause |
 | requests | Apache-2.0 |
 | fpdf2 | LGPL-3.0 (used unmodified, as a library) |
+| Pillow *(runtime via fpdf2; also `scripts/build_brand_assets.py`)* | MIT-CMU (HPND) |
+| fontTools *(runtime via fpdf2)* | MIT |
+| gunicorn *(production server)* | MIT |
 | pytest, ruff *(dev)* | MIT |
 | pypdf *(dev)* | BSD-3-Clause |
 | pip-audit *(dev)* | Apache-2.0 |
-| Pillow *(dev, `scripts/build_brand_assets.py`)* | MIT-CMU (HPND) |
+| PyYAML *(dev)* | MIT |
+| Playwright *(e2e tests)* | Apache-2.0 |
+
+CI also runs hadolint (GPL-3.0), gitleaks (MIT) and Trivy (Apache-2.0) as containers. They check the code but aren't part of it or of the image.
+
+The infrastructure code in `infra/` uses OpenTofu, the `hashicorp/google` provider, tflint and the tflint Google ruleset (all MPL-2.0). These are tools; none of them is redistributed.
+
+## In the Docker image
+
+A **published** image redistributes the runtime packages above, plus:
+
+| Component | Licence |
+|---|---|
+| Python (`python:3.14-slim` base image) | PSF License |
+| Debian base system packages | Various free licences (see `/usr/share/doc/*/copyright` in the image) |
+| DejaVu fonts (`fonts-dejavu-core`, for the PDF reports) | Bitstream Vera / Arev licence (free, redistributable) |
+
+Their licence texts ship inside the image: Debian copies under `/usr/share/doc/`, and Python packages under `site-packages/*.dist-info/`.

@@ -1,0 +1,17 @@
+# Allow-list: only what the running app needs enters the build context, and so the image.
+# Anything new (tests, docs, .env, .git, brand originals, scratch files) stays out unless added here on purpose.
+*
+
+!app.py
+!gunicorn.conf.py
+!pyproject.toml
+!requirements.txt
+!services/
+!templates/
+!static/
+!data/
+
+# Never ship caches or Windows download metadata, even inside allowed folders.
+**/__pycache__
+**/*.pyc
+**/*Zone.Identifier

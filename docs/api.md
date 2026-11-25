@@ -131,6 +131,19 @@ curl -OJ "http://127.0.0.1:5000/api/report/export?city=Brașov&lang=ro"
 
 It uses the same cache as `/api/weather`, so exporting right after viewing a city doesn't call Open-Meteo again.
 
+## `GET /health`
+
+A liveness check for Cloud Run, CI smoke tests and the Docker `HEALTHCHECK`.
+
+```json
+{ "status": "ok", "version": "1.1.0" }
+```
+
+- `version` comes from `pyproject.toml` (it's `"unknown"` if that file is missing).
+- **Why not `/healthz`:** Cloud Run's front end reserves "some paths ending with z" ([known issues](https://cloud.google.com/run/docs/issues)). Public requests to `/healthz` got Google's own 404 and never reached the app, while the internal probes still worked. So no route in this app ends in `z` (`test_no_route_ends_in_z`).
+- **It never calls Open-Meteo.** An upstream outage must not make the platform restart a healthy container; upstream problems show up as `502 upstream_error` on the data endpoints instead.
+- `Cache-Control: no-store`.
+
 ## Errors
 
 Both endpoints return errors as JSON:
@@ -160,8 +173,7 @@ Every response, including errors and static files, carries:
 | `X-Frame-Options` | `DENY` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
 | `Permissions-Policy` | camera, microphone, geolocation and payment disabled |
-
-`Strict-Transport-Security` is left to the TLS-terminating reverse proxy.
+| `Strict-Transport-Security` | `max-age=31536000`, **only on requests that arrived over HTTPS** (`X-Forwarded-Proto: https`, as Cloud Run sets it). Plain HTTP (localhost, Docker) never gets it. No `includeSubDomains`/`preload`, because `*.cloud.run` and `*.run.app` are Google's shared domains. |
 
 ## Caching behaviour
 

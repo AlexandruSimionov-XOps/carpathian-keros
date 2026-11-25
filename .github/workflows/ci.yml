@@ -1,0 +1,219 @@
+# Build, test and scan every change before it merges into `development` or `main`. Mark the six jobs as required
+# status checks in both branch rulesets. Policy for this file, enforced by tests/unit/test_ci_config.py:
+# actions pinned to full commit SHAs, tool images pinned by digest, read-only token, a timeout on every job.
+name: Build, Test & Scan
+
+on:
+  pull_request:
+    branches: [development, main]
+  push:
+    branches: [development, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.14"
+  NODE_VERSION: "24"
+  # Security tools run from their official images, pinned by digest: the same commands work locally (see
+  # docs/setup.md) and nobody can swap the tool under us by moving a tag.
+  HADOLINT_IMAGE: hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d
+  GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+  TRIVY_IMAGE: aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
+  TFLINT_IMAGE: ghcr.io/terraform-linters/tflint:v0.66.0@sha256:65b9944a9274c4989492c1d79998c2801664bf8a55fddb4bd3a9e6d73a006ddc
+  TOFU_VERSION: "1.13.10"
+
+jobs:
+  # ruff: code style, common bugs, formatting
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install ruff
+        run: pip install "$(grep -E '^ruff==' requirements-dev.txt)" # version pinned in requirements-dev.txt
+      - name: Check code
+        run: ruff check --output-format=github .
+      - name: Check formatting
+        run: ruff format --check .
+
+  # pytest: unit, API and PDF tests, plus the JavaScript tests through Node. Offline.
+  test:
+    name: Unit & API Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install PDF font
+        # The PDF tests check Romanian diacritics, which need a Unicode font.
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends fonts-dejavu-core
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Run tests
+        run: pytest
+
+  # pip-audit: known vulnerabilities in runtime, dev and e2e Python packages
+  audit:
+    name: Dependency Audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install pip-audit
+        run: pip install "$(grep -E '^pip-audit==' requirements-dev.txt)" # version pinned in requirements-dev.txt
+      - name: Audit dependencies
+        run: pip-audit -r requirements.txt -r requirements-e2e.txt
+
+  # gitleaks: secrets anywhere in the git history
+  secrets:
+    name: Secret Scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # a secret removed in a later commit is still leaked
+          persist-credentials: false
+      - name: Scan history for secrets
+        run: docker run --rm -v "$PWD:/repo:ro" "$GITLEAKS_IMAGE" git /repo --redact --no-banner
+
+  # hadolint → docker build → container tests → Trivy (fails on fixable HIGH/CRITICAL vulnerabilities)
+  docker:
+    name: Container Build & Scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Lint Dockerfile
+        # hadolint; ignored rules and their reasons are in .hadolint.yaml
+        run: docker run --rm -i -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" "$HADOLINT_IMAGE" < Dockerfile
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Install test dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Build image
+        run: |
+          VERSION="$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")"
+          docker build --pull --build-arg VERSION="$VERSION" -t carpathian-keros:ci .
+          docker image ls carpathian-keros:ci
+      - name: Test container
+        # health, API, PDF fonts, non-root user, clean logs, image contents and size, graceful shutdown
+        run: CK_DOCKER=1 CK_IMAGE=carpathian-keros:ci pytest -m docker
+      - name: Scan image for vulnerabilities
+        # Trivy: fails on HIGH/CRITICAL vulnerabilities that have a fix available
+        run: >-
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$TRIVY_IMAGE"
+          image --no-progress --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+          carpathian-keros:ci
+
+  # OpenTofu code in infra/ and infra/bootstrap/: format, validate and test (mocked provider, no GCP access),
+  # tflint with the Google ruleset, Trivy misconfiguration scan. Never touches real state or credentials.
+  infra:
+    name: Infrastructure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+          tofu_wrapper: false
+      - name: Check formatting
+        run: tofu fmt -check -recursive -diff infra
+      - name: Validate
+        run: |
+          for dir in infra/bootstrap infra; do
+            tofu -chdir="$dir" init -backend=false -input=false
+            tofu -chdir="$dir" validate
+          done
+      - name: Run infrastructure tests
+        # Google provider mocked: checks Workload Identity trust, Cloud Run sizing, IAM scope, budget, state bucket
+        run: |
+          tofu -chdir=infra/bootstrap test
+          tofu -chdir=infra test
+      - name: Lint with tflint
+        env:
+          GITHUB_TOKEN: ${{ github.token }} # read-only; avoids rate limits when tflint downloads its Google ruleset
+        run: |
+          docker run --rm -v "$PWD/infra:/data" -w /data -e GITHUB_TOKEN -e TFLINT_PLUGIN_DIR=/data/.terraform/tflint-plugins "$TFLINT_IMAGE" --init
+          docker run --rm -v "$PWD/infra:/data" -w /data -e TFLINT_PLUGIN_DIR=/data/.terraform/tflint-plugins "$TFLINT_IMAGE" --recursive --config=/data/.tflint.hcl
+      - name: Scan for misconfigurations
+        # Trivy config: fails on MEDIUM, HIGH or CRITICAL findings
+        run: >-
+          docker run --rm -v "$PWD/infra:/src:ro" "$TRIVY_IMAGE"
+          config --skip-dirs .terraform --severity MEDIUM,HIGH,CRITICAL --exit-code 1 /src
+
+  # Playwright: desktop and phone layouts, interactions, no console or CSP errors. The app runs with recorded weather
+  # (tests/e2e/fake_server.py), so Open-Meteo outages or rate limits on shared runners can't fail it; the CDNs are real.
+  e2e:
+    name: Browser Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Cache Chromium
+        # Playwright's browser download (~150 MB), keyed on the pinned Playwright version in requirements-e2e.txt
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements-e2e.txt') }}
+      - name: Install Playwright and Chromium
+        run: |
+          pip install -r requirements-e2e.txt
+          python -m playwright install --with-deps chromium # skips the download when cached; still adds OS libraries
+      - name: Run browser tests
+        run: CK_E2E=1 pytest -m e2e

@@ -4,6 +4,12 @@
 
 # Carpathian Keros
 
+[![Build, Test & Scan](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml/badge.svg?branch=development)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml)
+[![Deploy to Cloud Run](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/deploy.yml/badge.svg?event=push)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/deploy.yml)
+[![Release](https://img.shields.io/github/v/release/AlexandruSimionov-XOps/carpathian-keros?sort=semver)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/releases)
+[![License: MIT](https://img.shields.io/github/license/AlexandruSimionov-XOps/carpathian-keros)](LICENSE)
+[![Python 3.14](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white)](pyproject.toml)
+
 A bilingual (Romanian / English) weather dashboard for Romania's 319 official cities and towns (the [Wikipedia list](https://ro.wikipedia.org/wiki/Lista_ora%C8%99elor_din_Rom%C3%A2nia)). Search suggests matching cities as you type. It shows current conditions, a 24-hour hourly chart and a 7-day forecast, and you can download any report as a PDF in either language.
 
 Data comes from [Open-Meteo](https://open-meteo.com/), which needs no API key.
@@ -40,7 +46,7 @@ ruff check . && ruff format --check .
 CK_E2E=1 pytest -m e2e                  # optional browser tests (needs Playwright + network)
 ```
 
-Version: **1.0.0** (`pyproject.toml`). History: [`CHANGELOG.md`](CHANGELOG.md). Project rules for contributors and AI agents: [`AGENTS.md`](AGENTS.md).
+Version: **1.1.0** (`pyproject.toml`). History: [`CHANGELOG.md`](CHANGELOG.md). Project rules for contributors and AI agents: [`AGENTS.md`](AGENTS.md).
 
 ## Endpoints
 
@@ -50,8 +56,29 @@ Version: **1.0.0** (`pyproject.toml`). History: [`CHANGELOG.md`](CHANGELOG.md). 
 | `GET /api/cities` | The list of allowed cities (used for autocomplete) |
 | `GET /api/weather?city=<name>` | Location, current conditions, the next 24 hours and 7 days as JSON. `city` must be on the list |
 | `GET /api/report/export?city=<name>&lang=<en\|ro>` | PDF report download |
+| `GET /health` | Liveness check: `{"status": "ok", "version": "…"}`; never calls Open-Meteo |
 
 Errors come back as `{"error": "<code>", "message": "..."}`. The codes are `invalid_city` (400), `city_not_found` (404) and `upstream_error` (502). The frontend translates each code.
+
+## Docker
+
+```bash
+docker build -t carpathian-keros .
+docker run --rm -p 8080:8080 carpathian-keros     # → http://localhost:8080
+```
+
+Production image: gunicorn, a non-root user, the PDF fonts installed, and an allow-list build context. Details and container tests are in [docs/setup.md](docs/setup.md#run-with-docker).
+
+## Deployment
+
+The target is **Google Cloud Run** (europe-west1, free tier), at `https://carpathian-keros.cloud.run`. All Google Cloud resources are defined with **OpenTofu** in [`infra/`](infra/): Cloud Run, Artifact Registry, Workload Identity Federation (GitHub deploys **without any stored key**) and a budget alert, all tested with a mocked provider in CI. The step-by-step guide is [docs/infrastructure.md](docs/infrastructure.md).
+
+**Releases deploy themselves.** Pushing a `v*` tag runs [`deploy.yml`](.github/workflows/deploy.yml), which deploys blue/green:
+- build the image and scan it with Trivy
+- push it with keyless authentication
+- deploy it as a **no-traffic candidate** and smoke-test the candidate's own URL
+- only then move all traffic to it, and verify the public URL
+- roll back automatically if that last check fails
 
 ## Structure
 

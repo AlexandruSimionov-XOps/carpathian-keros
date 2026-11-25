@@ -1,6 +1,6 @@
 [project]
 name = "carpathian-keros"
-version = "1.0.0"  # single source of truth for the app version (Article IV); keep CHANGELOG.md in sync
+version = "1.1.0"  # single source of truth for the app version (Article IV); keep CHANGELOG.md in sync
 description = "Bilingual (RO/EN) weather dashboard for Romania's 319 official cities and towns"
 requires-python = ">=3.10"
 license = "MIT"
@@ -11,6 +11,7 @@ testpaths = ["tests"]
 addopts = "-ra --strict-markers"
 markers = [
     "e2e: browser tests against a live server (opt-in: CK_E2E=1, needs Playwright + network)",
+    "docker: build and run the production image (opt-in: CK_DOCKER=1, needs Docker + network)",
 ]
 
 [tool.ruff]

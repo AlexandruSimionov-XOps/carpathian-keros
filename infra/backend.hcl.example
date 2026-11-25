@@ -1,0 +1,4 @@
+# Copy to backend.hcl (git-ignored), then: tofu init -backend-config=backend.hcl
+# The bucket is created by infra/bootstrap (output state_bucket).
+bucket = "your-project-id-tfstate"
+prefix = "infra"

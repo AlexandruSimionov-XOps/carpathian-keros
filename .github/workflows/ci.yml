@@ -188,7 +188,8 @@ jobs:
           docker run --rm -v "$PWD/infra:/src:ro" "$TRIVY_IMAGE"
           config --skip-dirs .terraform --severity MEDIUM,HIGH,CRITICAL --exit-code 1 /src
 
-  # Playwright: desktop and phone layouts, interactions, no console or CSP errors. Needs network.
+  # Playwright: desktop and phone layouts, interactions, no console or CSP errors. The app runs with recorded weather
+  # (tests/e2e/fake_server.py), so Open-Meteo outages or rate limits on shared runners can't fail it; the CDNs are real.
   e2e:
     name: Browser Tests
     runs-on: ubuntu-24.04
@@ -204,9 +205,15 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
           cache-dependency-path: requirements*.txt
+      - name: Cache Chromium
+        # Playwright's browser download (~150 MB), keyed on the pinned Playwright version in requirements-e2e.txt
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements-e2e.txt') }}
       - name: Install Playwright and Chromium
         run: |
           pip install -r requirements-e2e.txt
-          python -m playwright install --with-deps chromium
+          python -m playwright install --with-deps chromium # skips the download when cached; still adds OS libraries
       - name: Run browser tests
         run: CK_E2E=1 pytest -m e2e

@@ -145,7 +145,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
    | Both Ștefănești PDFs got the same filename | `test_shared_names_get_distinct_filenames` |
    | Escape didn't close the autocomplete | e2e `test_autocomplete_keyboard_flow` |
    | 7-day cards showed an I-beam cursor and a text caret | e2e `test_day_cards_are_buttons_without_a_text_caret` |
-3. **Tests never hit the network.** Open-Meteo is stubbed with the recorded `tests/fixtures/open_meteo_forecast.json`, served by `FakeSession`, which is injected through the service (Article I-D). Network-dependent checks are separate and opt-in (`tests/e2e`, `CK_E2E=1`).
+3. **Tests never hit the network.** Open-Meteo is stubbed with the recorded `tests/fixtures/open_meteo_forecast.json`, served by `FakeSession`, which is injected through the service (Article I-D). The browser tests use the same fake: they run the real app through `tests/e2e/fake_server.py`, with only the weather source injected, so an Open-Meteo outage or rate limit can't fail them. Only the CDN scripts are fetched live. The only checks that call Open-Meteo for real are the opt-in container tests (`CK_DOCKER=1`) and, later, the post-deploy smoke test. Shared fakes live in `tests/fakes.py`.
 4. **Test layers and where they live:**
 
    | Layer | Tool | Location | Examples |
@@ -154,7 +154,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
    | API | pytest + Flask test client | `tests/api/` | status codes, error-code contract, `/api/cities` count = 319, PDF headers and filename, `lang` fallback |
    | PDF | pytest | `tests/pdf/` | starts with `%PDF`, one page, both languages, diacritics present, and the no-font fallback doesn't raise |
    | JS unit | Node `node:test` (run by `tests/test_javascript.py`) | `tests/js/` | `formatNumber` rounding, en/ro key parity, autocomplete ranking, completion, `resolveInput` |
-   | Frontend | Playwright (opt-in) | `tests/e2e/` | presets order, RO/EN toggle, autocomplete keys (↑↓ Enter Tab Esc), no page errors or CSP violations **after** a city or language change |
+   | Frontend | Playwright (opt-in; app with recorded weather via `fake_server.py`) | `tests/e2e/` | presets order, RO/EN toggle, autocomplete keys (↑↓ Enter Tab Esc), no page errors or CSP violations **after** a city or language change |
    | Container | pytest + Docker CLI (opt-in, `CK_DOCKER=1`) | `tests/docker/` | `/health`, API, PDF diacritics (fonts in the image), non-root user, no errors in startup logs, image contents and size, no pip, SIGTERM shutdown |
    | Infrastructure | `tofu test` with a **mocked** Google provider (no credentials, nothing created) + pytest policy checks | `infra/tests/`, `infra/bootstrap/tests/`, `tests/unit/test_infra_policy.py` | WIF trusts only this repo's `deploy.yml` on `main`/`v*` tags, Cloud Run free-tier sizing and probes, resource-scoped IAM, image cleanup, budget, state bucket privacy, input validation; no SA keys, no project-wide IAM, `allUsers` only as the public invoker |
 

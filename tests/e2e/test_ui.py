@@ -1,7 +1,8 @@
-"""Browser tests against a live server. Opt-in: they need Playwright + Chromium and network access to
-Open-Meteo and the CDNs.
+"""Browser tests against the real app served with recorded weather (tests/e2e/fake_server.py).
 
-    pip install playwright && playwright install chromium
+Opt-in: they need Playwright + Chromium, and network access for the CDN scripts (not for Open-Meteo):
+
+    pip install -r requirements-e2e.txt && playwright install chromium
     CK_E2E=1 pytest -m e2e
 """
 
@@ -25,22 +26,28 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 @pytest.fixture(scope="module")
-def base_url():
+def base_url(tmp_path_factory):
+    """The app with recorded weather (no Open-Meteo calls), on a free port. Its log goes to a file that's shown
+    if it doesn't start, instead of being discarded."""
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
         port = s.getsockname()[1]
-    env = {**os.environ, "HOST": "127.0.0.1", "PORT": str(port)}
-    proc = subprocess.Popen(
-        [sys.executable, "app.py"], cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+    log_path = tmp_path_factory.mktemp("server") / "server.log"
+    env = {**os.environ, "PORT": str(port)}
+    with log_path.open("w") as log:
+        proc = subprocess.Popen(
+            [sys.executable, "tests/e2e/fake_server.py"], cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT
+        )
     url = f"http://127.0.0.1:{port}"
     try:
-        for _ in range(50):
+        for _ in range(100):
             try:
-                urllib.request.urlopen(url, timeout=1)
+                urllib.request.urlopen(f"{url}/health", timeout=1)  # noqa: S310 - our own local test server
                 break
             except OSError:
-                time.sleep(0.2)
+                time.sleep(0.1)
+        else:
+            pytest.fail("test server didn't start:\n" + log_path.read_text())
         yield url
     finally:
         proc.terminate()

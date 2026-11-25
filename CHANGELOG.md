@@ -6,6 +6,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Changed
+- **Browser tests no longer depend on Open-Meteo.** They run the real app with the recorded forecast (`tests/e2e/fake_server.py`, the unit tests' `FakeSession`), so an Open-Meteo outage or a rate limit on shared CI runners can't fail them. Previously a slow answer made all 23 time out (6 minutes). Verified by running them with Open-Meteo blocked.
+- **CI caches Chromium** for the browser tests. The test server's log is kept and shown if it fails to start (it used to be discarded).
+
 ### Added
 - **Infrastructure as code** (`infra/`, OpenTofu) for Google Cloud Run in europe-west1:
   - a GCS state bucket and the foundation APIs (Storage, Resource Manager, Service Usage) in `infra/bootstrap/`, so `infra/` can plan in a fresh project

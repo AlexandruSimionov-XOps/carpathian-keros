@@ -7,7 +7,8 @@ Carpathian Keros is a bilingual (Romanian / English) weather dashboard for Roman
 | You want to… | Read |
 |---|---|
 | Use the dashboard | [User guide](user-guide.md) |
-| Install, run, stop or deploy it | [Setup & operations](setup.md) |
+| Install, run, stop it, or run it with Docker | [Setup & operations](setup.md) |
+| Deploy it to Google Cloud Run (OpenTofu) | [Infrastructure](infrastructure.md) |
 | Call the HTTP API or generate PDFs | [API reference](api.md) |
 | Understand how the pieces fit together | [Architecture](architecture.md) |
 | Change the UI, animations or charts | [Frontend guide](frontend.md) |

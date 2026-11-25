@@ -7,6 +7,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ## [Unreleased]
 
 ### Added
+- **Infrastructure as code** (`infra/`, OpenTofu) for Google Cloud Run in europe-west1:
+  - a GCS state bucket (`infra/bootstrap/`)
+  - Artifact Registry with image cleanup
+  - runtime and deployer service accounts with resource-scoped roles only
+  - **Workload Identity Federation**: no service-account keys. It trusts only this repository's `deploy.yml`, on `main`/`v*` tags, by numeric repository and owner ID.
+  - the Cloud Run service (scale to zero, max 2 instances, `/healthz` probes)
+  - a €1 monthly budget alert
+  - **Tests:** `tofu test` with a mocked Google provider, plus static policy checks
+  - **CI:** a new **Infrastructure** job (fmt, validate, test, tflint, Trivy config)
+  - **Dependabot:** now also watches the provider
+  - **Guide:** `docs/infrastructure.md`, including the one-time manual claim of the custom URL `https://carpathian-keros.cloud.run` (a Cloud Run Preview feature that OpenTofu doesn't support).
 - **CI** (`.github/workflows/ci.yml`) on every PR into `development` or `main`: ruff, pytest (+ Node), pip-audit, gitleaks (full history), hadolint → Docker build → container tests → Trivy (fails on fixable HIGH/CRITICAL), and the Playwright browser tests. Actions are pinned to commit SHAs, tool images by digest, and the token is read-only.
 - **Dependabot** (`.github/dependabot.yml`): weekly PRs into `development` for pip packages, GitHub Actions and the Docker base image.
 - `tests/unit/test_ci_config.py` checks the CI and supply-chain policy itself (pinning, permissions, timeouts, triggers, no `pull_request_target`).

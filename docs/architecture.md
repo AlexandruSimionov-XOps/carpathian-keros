@@ -8,6 +8,8 @@ carpathian-keros/
 ├── gunicorn.conf.py             Production server settings (PORT, workers, timeouts) used by the image
 ├── Dockerfile                   Two-stage production image (gunicorn, non-root, PDF fonts) for Docker / Cloud Run
 ├── .dockerignore                Allow-list: what may enter the image
+├── infra/                       OpenTofu: Cloud Run, Artifact Registry, WIF, IAM, budget (+ tests/, .tflint.hcl)
+│   └── bootstrap/               The GCS bucket for OpenTofu state (applied once, by hand)
 ├── data/cities_ro.json          The 319 official cities (generated, committed)
 ├── scripts/build_cities.py      Generator for data/cities_ro.json (Wikipedia + Open-Meteo Geocoding)
 ├── scripts/build_brand_assets.py  Generator for favicons, header logo, README logo, social preview (Pillow)

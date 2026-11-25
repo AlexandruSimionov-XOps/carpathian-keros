@@ -12,7 +12,7 @@ yaml = pytest.importorskip("yaml")
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS = sorted((ROOT / ".github/workflows").glob("*.yml"))
 SHA_PIN = re.compile(r"^[\w.-]+/[\w./-]+@[0-9a-f]{40}$")
-REQUIRED_JOBS = {"lint", "test", "audit", "secrets", "docker", "e2e"}
+REQUIRED_JOBS = {"lint", "test", "audit", "secrets", "docker", "e2e", "infra"}
 
 
 def load(path: Path) -> dict:
@@ -101,6 +101,15 @@ def test_docker_job_builds_tests_and_scans_the_image(ci):
     assert "hadolint" in run.lower()
 
 
+def test_infra_job_formats_validates_tests_lints_and_scans(ci):
+    infra_job = {"jobs": {"infra": ci["jobs"]["infra"]}}
+    run = " ".join(step.get("run", "") + " " + step.get("uses", "") for _, step in steps(infra_job))
+    for subcommand in ("fmt -check", "validate", "test"):
+        assert re.search(rf"tofu (-chdir=\S+ )?{subcommand}", run), subcommand
+    assert "tflint" in run and "config" in run
+    assert "-backend=false" in run, "CI must never touch the real state"
+
+
 def test_dockerfile_base_images_are_pinned_by_digest():
     """A tag like python:3.14-slim can change under us; a digest can't. Dependabot bumps the digest."""
     froms = re.findall(r"^FROM\s+(\S+)", (ROOT / "Dockerfile").read_text(encoding="utf-8"), re.M)
@@ -108,8 +117,9 @@ def test_dockerfile_base_images_are_pinned_by_digest():
     assert all(re.search(r"@sha256:[0-9a-f]{64}$", f) for f in froms), froms
 
 
-def test_dependabot_watches_pip_actions_and_docker_and_targets_development():
+def test_dependabot_watches_pip_actions_docker_and_opentofu_and_targets_development():
     config = yaml.safe_load((ROOT / ".github/dependabot.yml").read_text(encoding="utf-8"))
     ecosystems = {u["package-ecosystem"]: u for u in config["updates"]}
-    assert set(ecosystems) == {"pip", "github-actions", "docker"}
+    assert set(ecosystems) == {"pip", "github-actions", "docker", "terraform"}
+    assert set(ecosystems["terraform"]["directories"]) == {"/infra", "/infra/bootstrap"}
     assert all(u["target-branch"] == "development" for u in ecosystems.values())

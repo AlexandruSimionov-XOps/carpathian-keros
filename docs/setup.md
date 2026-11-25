@@ -39,7 +39,7 @@ See [AGENTS.md](../AGENTS.md), Article III, for the test-first workflow, and [ai
 
 ## Continuous integration
 
-The **Build, Test & Scan** workflow (`.github/workflows/ci.yml`) runs on every pull request into `development` or `main`, and on pushes to them. Six jobs run in parallel, and all must be green. Each can be reproduced locally with the same tool version:
+The **Build, Test & Scan** workflow (`.github/workflows/ci.yml`) runs on every pull request into `development` or `main`, and on pushes to them. Seven jobs run in parallel, and all must be green. Each can be reproduced locally with the same tool version:
 
 | CI job | What it checks | Run it locally |
 |---|---|---|
@@ -48,6 +48,7 @@ The **Build, Test & Scan** workflow (`.github/workflows/ci.yml`) runs on every p
 | **Dependency Audit** | Known vulnerabilities in Python packages (pip-audit) | `pip-audit -r requirements.txt -r requirements-e2e.txt` |
 | **Secret Scan** | Secrets anywhere in the git history (gitleaks) | `docker run --rm -v "$PWD:/repo:ro" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact` |
 | **Container Build & Scan** | Dockerfile lint (hadolint) → build → container tests → vulnerability scan (Trivy) | `docker run --rm -i -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" hadolint/hadolint:v2.15.1 < Dockerfile`<br>`docker build -t carpathian-keros:ci . && CK_DOCKER=1 CK_IMAGE=carpathian-keros:ci pytest -m docker`<br>`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.76.2 image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed carpathian-keros:ci` |
+| **Infrastructure** | OpenTofu in `infra/`: format, validate, tests with a mocked Google provider, tflint, Trivy misconfiguration scan | See [infrastructure.md → Changing the infrastructure](infrastructure.md#changing-the-infrastructure) |
 | **Browser Tests** | Desktop and phone layouts, interactions, no console or CSP errors (Playwright) | `pip install -r requirements-e2e.txt && playwright install chromium && CK_E2E=1 pytest -m e2e` |
 
 (The workflow pins each tool image by digest; the tags above are the same versions.)
@@ -57,7 +58,7 @@ The **Build, Test & Scan** workflow (`.github/workflows/ci.yml`) runs on every p
 - **Token:** the workflow token is read-only.
 - **Dependabot** (`.github/dependabot.yml`) opens weekly update PRs into `development`, and CI vets each one.
 
-**Make CI block merges:** in GitHub → Settings → Rules → Rulesets, for both `development` and `main`, add *Require status checks to pass* and select the six job names above. GitHub only lists them after the workflow has run once, i.e. after the first PR with this file.
+**Make CI block merges:** in GitHub → Settings → Rules → Rulesets, for both `development` and `main`, add *Require status checks to pass* and select the seven job names above. GitHub only lists them after the workflow has run once, i.e. after the first PR with this file.
 
 ## Versioning
 

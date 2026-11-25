@@ -36,3 +36,16 @@ updates:
     commit-message:
       prefix: build
       include: scope
+
+  - package-ecosystem: terraform # the Google provider in infra/ (OpenTofu uses the same provider and lock files)
+    directories: ["/infra", "/infra/bootstrap"]
+    target-branch: development
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      opentofu-providers:
+        update-types: [minor, patch]

@@ -57,6 +57,8 @@ Version: **1.0.0** (`pyproject.toml`). History: [`CHANGELOG.md`](CHANGELOG.md). 
 | `GET /api/report/export?city=<name>&lang=<en\|ro>` | PDF report download |
 | `GET /healthz` | Liveness check: `{"status": "ok", "version": "…"}`; never calls Open-Meteo |
 
+Errors come back as `{"error": "<code>", "message": "..."}`. The codes are `invalid_city` (400), `city_not_found` (404) and `upstream_error` (502). The frontend translates each code.
+
 ## Docker
 
 ```bash
@@ -66,7 +68,9 @@ docker run --rm -p 8080:8080 carpathian-keros     # → http://localhost:8080
 
 Production image: gunicorn, a non-root user, the PDF fonts installed, and an allow-list build context. Details and container tests are in [docs/setup.md](docs/setup.md#run-with-docker).
 
-Errors come back as `{"error": "<code>", "message": "..."}`. The codes are `invalid_city` (400), `city_not_found` (404) and `upstream_error` (502). The frontend translates each code.
+## Deployment
+
+The target is **Google Cloud Run** (europe-west1, free tier), at `https://carpathian-keros.cloud.run`. All Google Cloud resources are defined with **OpenTofu** in [`infra/`](infra/): Cloud Run, Artifact Registry, Workload Identity Federation (GitHub deploys **without any stored key**) and a budget alert, all tested with a mocked provider in CI. The step-by-step guide is [docs/infrastructure.md](docs/infrastructure.md).
 
 ## Structure
 

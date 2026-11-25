@@ -64,14 +64,22 @@ Run these after any change. Everything apart from the e2e and container tests is
 - Write new tests first (Article III). Put them next to their layer: `tests/unit`, `tests/api`, `tests/pdf`, `tests/js`, `tests/e2e`.
 - Use the fixtures in `tests/conftest.py`: `service`, `client`, `fake_session` (set `.error`, `.status_code` or `.payload`), `clock.advance()` and `registry`.
 
-**2. Browser tests** (for any frontend change; opt-in, needs network + Playwright)
+**2. Browser tests** (for any frontend change; opt-in, needs Playwright, plus network for the CDN scripts only)
 ```bash
-pip install playwright && playwright install chromium
+pip install -r requirements-e2e.txt && playwright install chromium
 CK_E2E=1 .venv/bin/pytest -m e2e
 ```
 These cover the presets, the RO/EN toggle, the autocomplete keys, whole-degree temperatures and the footer. They also fail on any console error, which includes **CSP violations** and the chart error from invariant 7. That error only appears **after** a city or language change, so the tests click through the flow.
 
-If no browser is installed, headless Chromium through Playwright works in a scratch venv; point `PYTHONPATH` at its site-packages. On minimal WSL images Chromium may need `libnspr4`, `libnss3` and `libasound2`. Without root, fetch them with `apt-get download`, extract them with `dpkg -x` into a scratch directory, and add that to `LD_LIBRARY_PATH`.
+They run the real app with **recorded weather** (`tests/e2e/fake_server.py`, the same `FakeSession` as the unit tests), never the live Open-Meteo API. Every city shows the same weather; the tests check behaviour, not forecasts. If the server doesn't start, the test failure includes its log.
+
+**No local browser (e.g. a minimal WSL):** use Microsoft's Playwright image, which has Chromium and its system libraries, at the version pinned in `requirements-e2e.txt`:
+```bash
+docker run --rm --ipc=host -v "$PWD:/src:ro" -w /work mcr.microsoft.com/playwright/python:v1.65.2-noble bash -c '
+  cp -r /src/. /work/ && rm -rf /work/.venv &&
+  pip install -q --break-system-packages --root-user-action=ignore -r requirements-e2e.txt &&
+  CK_E2E=1 python -m pytest -q -m e2e -p no:cacheprovider'
+```
 
 **3. Live server + curl.** See [setup.md → Verify](setup.md#verify-a-running-instance). Stop the server afterwards. On WSL, bind `HOST=0.0.0.0` if the user will open it from Windows.
 

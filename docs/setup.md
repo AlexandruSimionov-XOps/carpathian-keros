@@ -49,7 +49,7 @@ The **Build, Test & Scan** workflow (`.github/workflows/ci.yml`) runs on every p
 | **Secret Scan** | Secrets anywhere in the git history (gitleaks) | `docker run --rm -v "$PWD:/repo:ro" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact` |
 | **Container Build & Scan** | Dockerfile lint (hadolint) → build → container tests → vulnerability scan (Trivy) | `docker run --rm -i -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" hadolint/hadolint:v2.15.1 < Dockerfile`<br>`docker build -t carpathian-keros:ci . && CK_DOCKER=1 CK_IMAGE=carpathian-keros:ci pytest -m docker`<br>`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.76.2 image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed carpathian-keros:ci` |
 | **Infrastructure** | OpenTofu in `infra/`: format, validate, tests with a mocked Google provider, tflint, Trivy misconfiguration scan | See [infrastructure.md → Changing the infrastructure](infrastructure.md#changing-the-infrastructure) |
-| **Browser Tests** | Desktop and phone layouts, interactions, no console or CSP errors (Playwright) | `pip install -r requirements-e2e.txt && playwright install chromium && CK_E2E=1 pytest -m e2e` |
+| **Browser Tests** | Desktop and phone layouts, interactions, no console or CSP errors (Playwright), against the app with recorded weather | `pip install -r requirements-e2e.txt && playwright install chromium && CK_E2E=1 pytest -m e2e`, or with no local browser setup, see [ai-agents.md → Browser tests](ai-agents.md#verification-checklist) |
 
 (The workflow pins each tool image by digest; the tags above are the same versions.)
 

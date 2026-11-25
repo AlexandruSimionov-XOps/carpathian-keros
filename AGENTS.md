@@ -22,7 +22,7 @@ Weather comes from Open-Meteo (no API key). The city list comes from Wikipedia.
 | Production runtime | gunicorn in a two-stage Docker image (non-root, allow-list build context); target: Google Cloud Run | `Dockerfile`, `.dockerignore`, `gunicorn.conf.py` |
 | Infrastructure | OpenTofu: Cloud Run (europe-west1), Artifact Registry, Workload Identity Federation, budget alert, GCS state; guide in `docs/infrastructure.md` | `infra/`, `infra/bootstrap/` |
 | Tests | pytest (unit/API/PDF, offline), Node's test runner (JS), Playwright (opt-in e2e), container tests (opt-in) | `tests/` |
-| Versioning | SemVer; `version` in `pyproject.toml`, history in `CHANGELOG.md` | currently **1.0.0** |
+| Versioning | SemVer; `version` in `pyproject.toml`, history in `CHANGELOG.md` | currently **1.1.0** |
 | Docs | Markdown | `docs/`; start at `docs/README.md`, agents also read `docs/ai-agents.md` |
 
 **Endpoints:**
@@ -376,7 +376,7 @@ hotfix/… (from main) ──PR──▶ main ──▶ tag ──▶ merge main
 
 ---
 
-## Current gaps (as of 2026-11-25, v1.0.0)
+## Current gaps (as of 2026-11-25, v1.1.0)
 
 The constitution describes the target state. These items aren't in place yet. Don't pretend they are, and set them up when a task touches them (or when the user asks):
 

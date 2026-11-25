@@ -117,9 +117,9 @@ All four should print `200`.
 The production image (`Dockerfile`) runs the app under **gunicorn** as an unprivileged user, with the PDF fonts installed. This is the same image that goes to Google Cloud Run.
 
 ```bash
-docker build -t carpathian-keros --build-arg VERSION=1.0.0 .
+docker build -t carpathian-keros --build-arg VERSION=1.1.0 .
 docker run --rm -p 8080:8080 carpathian-keros        # → http://localhost:8080
-curl http://localhost:8080/health                    # {"status":"ok","version":"1.0.0"}
+curl http://localhost:8080/health                    # {"status":"ok","version":"1.1.0"}
 ```
 
 On WSL2, `http://localhost:8080` also works from the Windows browser. Stop the container with **Ctrl+C**.

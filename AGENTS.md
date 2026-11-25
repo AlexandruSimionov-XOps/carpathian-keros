@@ -156,6 +156,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
    | JS unit | Node `node:test` (run by `tests/test_javascript.py`) | `tests/js/` | `formatNumber` rounding, en/ro key parity, autocomplete ranking, completion, `resolveInput` |
    | Frontend | Playwright (opt-in; app with recorded weather via `fake_server.py`) | `tests/e2e/` | presets order, RO/EN toggle, autocomplete keys (↑↓ Enter Tab Esc), no page errors or CSP violations **after** a city or language change |
    | Container | pytest + Docker CLI (opt-in, `CK_DOCKER=1`) | `tests/docker/` | `/health`, API, PDF diacritics (fonts in the image), non-root user, no errors in startup logs, image contents and size, no pip, SIGTERM shutdown |
+   | Deploy | pytest on `deploy.yml` + `scripts/smoke_test.py` against a real HTTP server | `tests/unit/test_cd_config.py`, `tests/unit/test_smoke_test.py` | triggers (v* tags, manual), OIDC only in the deploy job, no keys or secrets, never cancelled halfway, scan before push, smoke test before traffic, rollback; the smoke test catches a wrong live version |
    | Infrastructure | `tofu test` with a **mocked** Google provider (no credentials, nothing created) + pytest policy checks | `infra/tests/`, `infra/bootstrap/tests/`, `tests/unit/test_infra_policy.py` | WIF trusts only this repo's `deploy.yml` on `main`/`v*` tags, Cloud Run free-tier sizing and probes, resource-scoped IAM, image cleanup, budget, state bucket privacy, input validation; no SA keys, no project-wide IAM, `allUsers` only as the public invoker |
 
    In e2e tests, wait with `expect(...)`, never `page.wait_for_function("<string>")`. String predicates need `eval`, which the CSP blocks, and the CSP must not be loosened for tests.
@@ -222,7 +223,7 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 | Browser → Flask | Untrusted | Validation as in V.1. Read-only `GET` endpoints, no state changes, no cookies or sessions. |
 | Flask → `api.open-meteo.com` | Semi-trusted | The **only** outbound host at runtime. Timeouts (3 s connect / 8 s read) and bounded retries are mandatory on every outbound call. |
 | `scripts/build_cities.py` → Wikipedia, Open-Meteo Geocoding | Untrusted | Offline only. Review the generated diff before committing (Article VI). |
-| GitHub Actions → Google Cloud | Federated, least privilege | **Workload Identity Federation only, never service-account keys.** The trust condition pins the repository and owner by **numeric ID**, the `deploy.yml` workflow, and `main`/`v*` refs. The deployer has resource-scoped roles only (push to one repository, deploy one service, act as `ck-runtime`). The app's runtime account has **no roles**. No project-wide IAM. Any change to `infra/wif.tf` or `infra/iam.tf` is security-sensitive (V.4). |
+| GitHub Actions → Google Cloud | Federated, least privilege | **Workload Identity Federation only, never service-account keys.** The trust condition pins the repository and owner by **numeric ID**, the `deploy.yml` workflow, and `main`/`v*` refs. The deployer has resource-scoped roles only (push to one repository, deploy one service, act as `ck-runtime`). The app's runtime account has **no roles**. No project-wide IAM. Any change to `infra/wif.tf` or `infra/iam.tf` is security-sensitive (V.4). Only the `deploy` job of `deploy.yml` may request an OIDC token (`id-token: write`); GitHub variables and step outputs reach scripts only through `env:` (`tests/unit/test_cd_config.py`). |
 | Container image → its host (Docker, Cloud Run) | Least privilege | Runs as uid 10001 (no home, no shell), with app files owned by root. `.dockerignore` is an **allow-list**: add a path there only if the running app needs it. **Never** put secrets, `.env` files or credentials into the image or a build arg; inject them at runtime (Cloud Run secrets / env). `/health` stays dependency-free. |
 | Browser → CDNs (Tailwind, jsDelivr) | Third-party | Versions pinned in `index.html`. jsDelivr scripts carry Subresource Integrity (`integrity="sha384-…"` + `crossorigin="anonymous"`). **When you bump a version, recompute the hash**, or the browser refuses to load the file. Fonts are self-hosted (`static/fonts/`). |
 
@@ -358,7 +359,11 @@ hotfix/… (from main) ──PR──▶ main ──▶ tag ──▶ merge main
 5. **Release:**
    1. On `development`, merge a `release/X.Y.Z` PR that bumps `version` in `pyproject.toml` and moves `[Unreleased]` under `## [X.Y.Z] - <date>` in `CHANGELOG.md`.
    2. Open a PR **`development` → `main`** titled `chore(release): vX.Y.Z`, and merge it with a **merge commit, never squash**. Squashing here gives `main` commits that `development` doesn't have, so the two drift apart and every later release PR shows old changes again.
-   3. Tag on `main`: `git switch main && git pull && git tag -a vX.Y.Z -m "Carpathian Keros vX.Y.Z" && git push origin vX.Y.Z`, then publish a GitHub Release from the tag.
+   3. Tag on `main`: `git switch main && git pull && git tag -a vX.Y.Z -m "Carpathian Keros vX.Y.Z" && git push origin vX.Y.Z`. **Pushing the tag deploys it** (`.github/workflows/deploy.yml`):
+      - checks the tag against `pyproject.toml`'s version
+      - build → Trivy → push → no-traffic candidate → smoke test (`scripts/smoke_test.py`) → 100% traffic → public check, with an automatic rollback if that last check fails
+
+      Then publish a GitHub Release from the tag.
 6. **Hotfix:** `hotfix/*` from `main` → PR into `main` → tag the PATCH version → merge `main` back into `development` (a PR `main` → `development`), so the fix isn't lost in the next release.
 
 **Agent rules:**
@@ -377,14 +382,9 @@ The constitution describes the target state. These items aren't in place yet. Do
 
 - **CI checks aren't required yet.** `.github/workflows/ci.yml` runs on every PR into `development` and `main`, but GitHub only blocks a merge once the checks are marked required. Still to do in the rulesets for **both** branches: PR required, no force-push, no deletion, and these status checks required: `Lint`, `Unit & API Tests`, `Dependency Audit`, `Secret Scan`, `Container Build & Scan`, `Infrastructure`, `Browser Tests`. Workflow, job and step names stay short, readable and parenthesis-free; tool details go in YAML comments (`test_names_are_short_and_readable`). Don't restrict the repo to squash-merge only: release PRs (`development` → `main`) need merge commits.
 - **Tailwind Play CDN.** It can't carry an SRI hash (its content isn't pinned by hash), and it injects `<style>`, so the CSP needs `style-src 'unsafe-inline'`. Fix: compile Tailwind with its CLI into `static/css/` and drop the CDN. ApexCharts also sets inline styles, so check whether `'unsafe-inline'` can actually be removed afterwards.
-- **No HSTS header.** It belongs where TLS terminates (`Strict-Transport-Security`), not in the app, which also runs over plain HTTP locally. On Cloud Run, Google's front end terminates TLS but doesn't add HSTS. Add it when deploying, only for requests that arrived over HTTPS (`X-Forwarded-Proto: https`).
-- **Not deployed yet.**
-  - **Ready:** the image is built, tested and scanned in CI, and the infrastructure code in `infra/` is written and tested.
-  - **Next, by the user:** the first `tofu apply` (`docs/infrastructure.md`).
-  - **Then:** the deploy workflow `.github/workflows/deploy.yml` (CD on `v*` tags via Workload Identity Federation, using the GitHub variables listed in `docs/infrastructure.md`).
-  - **Manual, outside IaC:** the custom URL `carpathian-keros.cloud.run`. It's a Cloud Run Preview feature, not supported by Terraform/OpenTofu, and it needs `roles/run.admin`, which the deployer deliberately lacks. The user claims it once with `gcloud beta run domain-mappings create`. Never delete that mapping: the name becomes claimable by anyone immediately. Keep the default `run.app` URL enabled as a fallback.
-
-  The CD PR must also add its status badge to the README, next to the CI badge, in the same style: `[![<Workflow name>](…/actions/workflows/<file>.yml/badge.svg?branch=main)](…/actions/workflows/<file>.yml)`, tracking `main`, because deploys come from releases.
+- **No release deployed yet.** The infrastructure is applied, and `carpathian-keros.cloud.run` still serves Google's placeholder until the first `v*` tag runs `.github/workflows/deploy.yml`.
+  - **First run:** confirm that the README's deploy badge (`?event=push`) shows the tag run's status. GitHub's badge filters are easy to get wrong for tag-triggered workflows.
+  - **The custom URL is manual, outside IaC:** `carpathian-keros.cloud.run` is a Cloud Run Preview feature, not supported by Terraform/OpenTofu, and it needs `roles/run.admin`, which the deployer deliberately lacks. It's claimed (`gcloud beta run domain-mappings create`). Never delete that mapping: the name becomes claimable by anyone immediately. Keep the default `run.app` URL enabled as a fallback.
 
 ## Working agreements
 

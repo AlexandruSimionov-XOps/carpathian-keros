@@ -140,6 +140,22 @@ class TestReportExport:
         assert resp.json["error"] == "city_not_found"
 
 
+class TestHsts:
+    """Strict-Transport-Security only for requests that arrived over HTTPS (Cloud Run terminates TLS in front of the
+    app and says so in X-Forwarded-Proto). Never on plain HTTP: localhost and Docker must keep working."""
+
+    def test_sent_for_https_requests(self, client):
+        resp = client.get("/", headers={"X-Forwarded-Proto": "https"})
+        assert resp.headers["Strict-Transport-Security"] == "max-age=31536000"
+
+    def test_not_sent_over_plain_http(self, client):
+        assert "Strict-Transport-Security" not in client.get("/").headers
+
+    def test_on_api_responses_too(self, client):
+        resp = client.get("/health", headers={"X-Forwarded-Proto": "https"})
+        assert "Strict-Transport-Security" in resp.headers
+
+
 class TestSecurityHeaders:
     @pytest.mark.parametrize(
         "path",

@@ -11,7 +11,10 @@ GitHub Actions (deploy.yml, on a v* tag)
                          └─ https://carpathian-keros.cloud.run                               (custom URL, Preview)
 ```
 
-> **Status:** the infrastructure code is ready and tested (`tofu test`, tflint, Trivy). The first `apply` and the deploy workflow (CD) come next. Until CD exists, the service runs Google's placeholder "hello" image.
+> **Status:**
+> - **Infrastructure:** applied, and `https://carpathian-keros.cloud.run` is claimed.
+> - **Releases:** deployed by `.github/workflows/deploy.yml` (see [Deploying a release](#deploying-a-release)).
+> - **Until the first `v*` tag:** the service runs Google's placeholder "hello" image.
 
 ## What's managed, and where
 
@@ -127,6 +130,34 @@ In GitHub → **Settings → Secrets and variables → Actions → Variables**, 
 | `GCP_DEPLOYER_SERVICE_ACCOUNT` | `tofu output -raw deployer_service_account` |
 | `GCP_IMAGE_REPOSITORY` | `tofu output -raw image_repository` |
 | `GCP_SERVICE_NAME` | `tofu output -raw service_name` |
+
+## Deploying a release
+
+Pushing a release tag deploys it: `git tag -a v1.1.0 -m "…" && git push origin v1.1.0`, on `main` after the release PR (AGENTS.md, Article VI). The workflow `.github/workflows/deploy.yml` (*Deploy to Cloud Run*) then:
+
+1. **Checks the tag** against `version` in `pyproject.toml`, so `v1.1.0` can only deploy 1.1.0.
+2. **Builds the image and scans it with Trivy.** A fixable HIGH/CRITICAL vulnerability stops the deploy before anything is pushed.
+3. **Authenticates through Workload Identity Federation** and pushes `…/carpathian-keros/app:1.1.0`. Tags are immutable; a re-run reuses the pushed image.
+4. **Deploys a candidate revision with no traffic**, tagged `candidate`. Users still see the previous version.
+5. **Smoke-tests the candidate on its own URL** (`https://candidate---carpathian-keros-….run.app`) with `scripts/smoke_test.py`:
+   - `/health` reports the expected version
+   - the page loads with its security headers
+   - the weather API works against live Open-Meteo
+   - the PDF export works
+6. **Promotes it** to 100% of the traffic.
+7. **Verifies the public URL** `https://carpathian-keros.cloud.run` the same way. If that fails, the workflow **sends the traffic back** to the previous revision automatically.
+
+Only the image changes in a deploy. Scaling, the service account and the probes stay exactly as OpenTofu defines them (`infra/run.tf` ignores just the image and the traffic split). The deployment shows up on the repository's **Environments → production** page, with a link to the URL.
+
+**Run the smoke test yourself:** `python3 scripts/smoke_test.py https://carpathian-keros.cloud.run 1.1.0`
+
+**Roll back by hand** to any earlier revision:
+```bash
+gcloud run revisions list --service=carpathian-keros --region=europe-west1          # newest first
+gcloud run services update-traffic carpathian-keros --region=europe-west1 --to-revisions=<REVISION>=100
+```
+
+**Redeploy `main` without a new release** (e.g. after a rollback): *Actions → Deploy to Cloud Run → Run workflow* on `main`. The image is tagged `<version>-<commit>`.
 
 ## Changing the infrastructure
 

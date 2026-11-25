@@ -47,6 +47,14 @@ def test_cloud_run_lets_cd_own_the_image():
     assert re.search(r"ignore_changes\s*=\s*\[[^\]]*template\[0\]\.containers\[0\]\.image", run_tf, re.S)
 
 
+def test_cloud_run_lets_cd_own_traffic():
+    """The deploy workflow moves traffic (no-traffic candidate, then 100% to it, or a rollback); OpenTofu must not
+    reset that split, or the next `tofu apply` would undo a deploy."""
+    run_tf = (INFRA / "run.tf").read_text(encoding="utf-8")
+    block = re.search(r"ignore_changes\s*=\s*\[(.*?)\n\s*\]", run_tf, re.S)  # the whole list, up to its own line's ]
+    assert block and re.search(r"^\s*traffic,?\s*$", block.group(1), re.M)
+
+
 def test_provider_versions_are_pinned_and_locked():
     for module in (INFRA, INFRA / "bootstrap"):
         versions = (module / "versions.tf").read_text(encoding="utf-8")

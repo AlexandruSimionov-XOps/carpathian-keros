@@ -1,0 +1,166 @@
+# Continuous deployment to Google Cloud Run. Runs when a release tag (v*) is pushed on main (AGENTS.md, Article VI),
+# or manually on main. Blue/green: the new version is deployed with no traffic, smoke-tested on its own URL, and
+# only then receives 100% of the traffic; if the public check fails afterwards, traffic goes back.
+#
+# Authentication: Workload Identity Federation (infra/wif.tf). GitHub's short-lived OIDC token is exchanged for
+# short-lived credentials of ck-deployer. No keys or secrets exist; the GCP_* repository variables aren't secret.
+# Policy for this file: tests/unit/test_cd_config.py (and the generic rules in test_ci_config.py).
+name: Deploy to Cloud Run
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch: # redeploy main by hand (Workload Identity only accepts main or v* tags)
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false # never stop a deploy halfway; the next one waits
+
+env:
+  TRIVY_IMAGE: aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
+  PUBLIC_URL: https://carpathian-keros.cloud.run
+  # Repository variables (Settings → Secrets and variables → Actions → Variables), from `tofu output`:
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  REGION: ${{ vars.GCP_REGION }}
+  SERVICE: ${{ vars.GCP_SERVICE_NAME }}
+  IMAGE_REPOSITORY: ${{ vars.GCP_IMAGE_REPOSITORY }}
+
+jobs:
+  deploy:
+    name: Build, Verify & Deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: https://carpathian-keros.cloud.run
+    permissions:
+      contents: read
+      id-token: write # GitHub's OIDC token, exchanged via Workload Identity Federation; this job only
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Determine version
+        id: version
+        # A release tag must match pyproject.toml (v1.1.0 ↔ version = "1.1.0"). Manual runs: main only.
+        run: |
+          VERSION="$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            if [[ "${GITHUB_REF_NAME#v}" != "$VERSION" ]]; then
+              echo "::error::Tag $GITHUB_REF_NAME doesn't match version $VERSION in pyproject.toml"
+              exit 1
+            fi
+            IMAGE_TAG="$VERSION"
+          elif [[ "$GITHUB_REF" == refs/heads/main ]]; then
+            IMAGE_TAG="$VERSION-${GITHUB_SHA::7}"
+          else
+            echo "::error::Deploys run only from a v* tag or main, not $GITHUB_REF"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "image=$IMAGE_REPOSITORY/app:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Build image
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          IMAGE: ${{ steps.version.outputs.image }}
+        run: docker build --pull --build-arg VERSION="$VERSION" -t "$IMAGE" .
+
+      - name: Scan image for vulnerabilities
+        # Same gate as CI: nothing with a fixable HIGH/CRITICAL vulnerability is pushed
+        env:
+          IMAGE: ${{ steps.version.outputs.image }}
+        run: >-
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$TRIVY_IMAGE"
+          image --no-progress --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE"
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SERVICE_ACCOUNT }}
+          token_format: access_token
+
+      - name: Push image
+        # Tags are immutable in Artifact Registry: a re-run after a successful push deploys the image already there
+        env:
+          IMAGE: ${{ steps.version.outputs.image }}
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          echo "$ACCESS_TOKEN" | docker login -u oauth2accesstoken --password-stdin "https://$REGION-docker.pkg.dev"
+          if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
+            echo "::notice::$IMAGE already exists (re-run): deploying it as is"
+          else
+            docker push "$IMAGE"
+          fi
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      - name: Record serving revision
+        id: previous
+        # What gets the traffic now: the rollback target if the new version fails its public check
+        run: |
+          PREVIOUS="$(gcloud run services describe "$SERVICE" --region "$REGION" --format=json \
+            | jq -r '[.status.traffic[] | select(.percent == 100) | .revisionName][0] // empty')"
+          echo "Serving now: ${PREVIOUS:-none}"
+          echo "revision=$PREVIOUS" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy candidate
+        # New revision with no traffic, reachable only on its own "candidate" tag URL. Only the image changes:
+        # scaling, service account and probes stay as OpenTofu defined them (infra/run.tf).
+        uses: google-github-actions/deploy-cloudrun@2028e2d7d30a78c6910e0632e48dd561b064884d # v3.0.1
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          region: ${{ vars.GCP_REGION }}
+          service: ${{ vars.GCP_SERVICE_NAME }}
+          image: ${{ steps.version.outputs.image }}
+          no_traffic: true
+          tag: candidate
+          skip_default_labels: true
+
+      - name: Smoke test candidate
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          CANDIDATE_URL="$(gcloud run services describe "$SERVICE" --region "$REGION" --format=json \
+            | jq -r '.status.traffic[] | select(.tag == "candidate") | .url')"
+          echo "Candidate: $CANDIDATE_URL"
+          python3 scripts/smoke_test.py "$CANDIDATE_URL" "$VERSION"
+
+      - name: Promote to all traffic
+        id: promote
+        run: gcloud run services update-traffic "$SERVICE" --region "$REGION" --to-latest
+
+      - name: Verify public URL
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: python3 scripts/smoke_test.py "$PUBLIC_URL" "$VERSION"
+
+      - name: Roll back on failure
+        if: failure() && steps.promote.outcome == 'success' && steps.previous.outputs.revision != ''
+        env:
+          PREVIOUS: ${{ steps.previous.outputs.revision }}
+        run: |
+          echo "::warning::Public check failed: sending all traffic back to $PREVIOUS"
+          gcloud run services update-traffic "$SERVICE" --region "$REGION" --to-revisions "$PREVIOUS=100"
+
+      - name: Write summary
+        if: always()
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          IMAGE: ${{ steps.version.outputs.image }}
+          OUTCOME: ${{ job.status }}
+        run: |
+          {
+            echo "### Deploy $VERSION: $OUTCOME"
+            echo "- Image: \`$IMAGE\`"
+            echo "- Public URL: $PUBLIC_URL"
+          } >> "$GITHUB_STEP_SUMMARY"

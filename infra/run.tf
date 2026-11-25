@@ -54,10 +54,12 @@ resource "google_cloud_run_v2_service" "app" {
   }
 
   lifecycle {
-    # OpenTofu owns the service's configuration; the deploy workflow owns which image version runs.
-    # Without this, the next `tofu apply` would roll production back to var.initial_image.
+    # OpenTofu owns the service's configuration; the deploy workflow owns which image version runs and where the
+    # traffic goes (candidate revision with no traffic, then 100%, or a rollback).
+    # Without this, the next `tofu apply` would roll production back to var.initial_image or reset the traffic split.
     ignore_changes = [
       template[0].containers[0].image,
+      traffic,
       client,
       client_version,
     ]

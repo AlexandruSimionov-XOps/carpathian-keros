@@ -291,7 +291,8 @@
         labels: {
           rotate: 0,
           hideOverlappingLabels: true,
-          formatter: (v) => (v && Number(v.slice(0, 2)) % 3 === 0 ? v : ""),
+          // Every 3 h; every 6 h on phones, where 8 labels don't fit (evaluated on each redraw, so rotation works).
+          formatter: (v) => (v && Number(v.slice(0, 2)) % (NARROW.matches ? 6 : 3) === 0 ? v : ""),
         },
         axisBorder: { color: COLORS.grid },
         axisTicks: { show: false },
@@ -336,7 +337,12 @@
       colors: [COLORS.precip],
       fill: { type: "gradient", gradient: { type: "vertical", gradientToColors: [COLORS.temp], stops: [0, 100] } },
       plotOptions: { bar: { horizontal: false, columnWidth: "34%", borderRadius: 5 } },
-      xaxis: { axisBorder: { color: COLORS.grid }, axisTicks: { show: false }, tooltip: { enabled: false } },
+      xaxis: {
+        labels: { style: { fontSize: NARROW.matches ? "10px" : "12px" } }, // 7 day names fit on a 360px phone
+        axisBorder: { color: COLORS.grid },
+        axisTicks: { show: false },
+        tooltip: { enabled: false },
+      },
       yaxis: { tickAmount: 5, labels: { minWidth: Y_LABEL_WIDTH, formatter: (v) => `${fmt(v, 0)}°` } },
       tooltip: {
         theme: "dark",
@@ -482,11 +488,21 @@
   }
 
   // ------------------------------------------------------------- i18n
+  const NARROW = window.matchMedia("(max-width: 639px)"); // same breakpoint as Tailwind's `sm:` and style.css
+
+  /** Placeholders can't be styled per screen size, so phones get the short variant when one is declared. */
+  function applyPlaceholders(vars = { count: document.body.dataset.cityCount || "" }) {
+    $$("[data-i18n-placeholder]").forEach((el) => {
+      const key = NARROW.matches && el.dataset.i18nPlaceholderShort ? el.dataset.i18nPlaceholderShort : el.dataset.i18nPlaceholder;
+      el.placeholder = t(key, vars);
+    });
+  }
+
   function applyTranslations() {
     document.documentElement.lang = state.lang;
     const vars = { count: document.body.dataset.cityCount || "" };
     $$("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n, vars); });
-    $$("[data-i18n-placeholder]").forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder, vars); });
+    applyPlaceholders(vars);
     $$("[data-i18n-aria]").forEach((el) => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
     $$("[data-lang-option]").forEach((el) => el.classList.toggle("is-active", el.dataset.langOption === state.lang));
     $$(".preset-chip").forEach((chip) => {
@@ -588,6 +604,7 @@
     updatePdfLink();
 
     $("#lang-toggle").addEventListener("click", () => setLanguage(state.lang === "en" ? "ro" : "en"));
+    NARROW.addEventListener("change", () => applyPlaceholders()); // rotating a phone, resizing a window
     $("#daily-cards").addEventListener("click", (e) => toggleDay(e.target.closest(".day-card")?.dataset.date));
     $("#hourly-reset").addEventListener("click", () => {
       state.selectedDate = null;

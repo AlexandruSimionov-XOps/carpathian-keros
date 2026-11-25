@@ -69,6 +69,20 @@ let autocomplete;      // controller returned by CK_Autocomplete.mount() in init
 | `toggleDay(date)` | Selects a 7-day card (or deselects it: today, the same day again, or the reset button) → `state.selectedDate`. Re-renders the cards, `renderHourlyHeader()` and only the two hourly charts, then scrolls `#hourly-section` into view with `block: "nearest"`. The section sits right below `#forecast-section`, so the page only scrolls down, and only as far as needed. Triggered by card clicks (delegated on `#daily-cards`), `#hourly-reset` and the range chart's `dataPointSelection` event. |
 | `selectedHours(data)` | The hours the hourly charts show: `daily[i].hourly` for the selected day, otherwise the next-24-hours `hourly`. |
 
+## Phones (below 640 px)
+
+One breakpoint, 639 px, the same as Tailwind's `sm:`. In JS it's `NARROW`, a `matchMedia` in `app.js`.
+
+| Area | Phone behaviour | Where |
+|---|---|---|
+| Current conditions | Illustration (96 px) beside the city name. Feels like / humidity / wind always 3 columns, tighter type | `index.html`, `.metric` / `.weather-scene` in `style.css` |
+| 7-day cards | One swipeable row with scroll snap that bleeds to the card edges (`#daily-cards`). From 640 px: a 4-, then 7-column grid | `style.css` |
+| Hourly chart | Axis labels every 6 h instead of 3 h. The formatter reads `NARROW` on each redraw, so rotating works | `precipChartOptions` |
+| 7-day chart | Axis labels at 10 px | `rangeChartOptions` |
+| Search box | Short placeholder (`searchPlaceholderShort`), switched live on `NARROW` change | `applyPlaceholders()` |
+
+`tests/e2e` checks all of this at 360 and 390 px (the `phone` fixture), including "no sideways scrolling" and "no overlapping axis labels".
+
 ## City autocomplete
 
 The search box is an ARIA combobox (`#city-input`, `role="combobox"`, listbox `#city-suggestions`). Everything lives in `static/js/autocomplete.js`, and matching happens entirely in the browser.

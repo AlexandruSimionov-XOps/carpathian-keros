@@ -50,7 +50,8 @@
                  role="combobox" aria-autocomplete="both" aria-expanded="false" aria-controls="city-suggestions"
                  spellcheck="false" autocapitalize="off" autocorrect="off"
                  class="city-input w-full rounded-xl border border-white/10 bg-keros-900/80 py-3 pl-12 pr-4 text-base leading-6 text-slate-100 placeholder-slate-500 outline-none transition focus:border-keros-amber/60 focus:ring-2 focus:ring-keros-amber/30"
-                 placeholder="Caută printre cele {{ city_count }} orașe din România…" data-i18n-placeholder="searchPlaceholder">
+                 placeholder="Caută printre cele {{ city_count }} orașe din România…" data-i18n-placeholder="searchPlaceholder"
+                 data-i18n-placeholder-short="searchPlaceholderShort">
           <!-- Inline completion: the typed text (invisible) followed by the rest of the best match. -->
           <div id="city-ghost" class="city-ghost" aria-hidden="true"><span class="ghost-typed"></span><span class="ghost-rest"></span></div>
           <ul id="city-suggestions" role="listbox" class="suggestions hidden" aria-label="Sugestii de orașe" data-i18n-aria="suggestionsLabel"></ul>
@@ -79,13 +80,13 @@
       <!-- Current conditions -->
       <section class="reveal card overflow-hidden">
         <div class="grid gap-6 p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-          <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
+          <div class="flex flex-row items-center gap-4 sm:gap-6">
             <div id="weather-scene" class="weather-scene" aria-hidden="true"></div>
             <div class="min-w-0">
               <p class="text-xs font-semibold uppercase tracking-widest text-keros-amber" data-i18n="currentConditions">Condiții actuale</p>
               <h2 id="loc-name" class="mt-1 truncate text-3xl font-extrabold tracking-tight sm:text-4xl">—</h2>
               <p id="loc-region" class="text-sm text-slate-400">&nbsp;</p>
-              <div class="mt-3 flex items-end gap-3">
+              <div class="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
                 <p class="text-6xl font-extrabold leading-none tracking-tighter tabular-nums"><span id="m-temp" data-decimals="0">–</span><span class="align-top text-3xl font-semibold text-slate-400">°C</span></p>
                 <p id="condition" class="pb-1 text-lg font-medium text-slate-200"></p>
               </div>
@@ -101,7 +102,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 border-t border-white/5 sm:grid-cols-3">
+        <div class="grid grid-cols-3 border-t border-white/5">
           <div class="metric">
             <p class="metric-label" data-i18n="feelsLike">Temperatură resimțită</p>
             <p class="metric-value"><span id="m-feels" data-decimals="0">–</span><span class="metric-unit">°C</span></p>
@@ -123,7 +124,8 @@
           <h3 class="text-lg font-bold" data-i18n="forecastTitle">Prognoză pe 7 zile</h3>
           <p class="text-sm text-slate-400" data-i18n="rangeSubtitle">Temperatura minimă și maximă zilnică</p>
         </div>
-        <div id="daily-cards" class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7"></div>
+        <!-- Phones: one swipeable row (style.css → #daily-cards). From 640px: a 4-column, then 7-column grid. -->
+        <div id="daily-cards" class="mb-6 gap-3 sm:grid sm:grid-cols-4 lg:grid-cols-7"></div>
         <div id="chart-range" class="chart-box"></div>
       </section>
 
@@ -148,7 +150,7 @@
       <p><strong class="text-slate-400">{{ app_name }}</strong> · <span data-i18n="footer">Date meteo de la Open-Meteo.com (CC BY 4.0) · Lista orașelor de pe Wikipedia (CC BY-SA 4.0).</span></p>
       <p class="mt-1">Made with <span role="img" aria-label="dragoste">❤️</span> by
         <a href="https://github.com/AlexandruSimionov-XOps" target="_blank" rel="noopener noreferrer"
-           class="font-medium text-slate-400 underline decoration-slate-600 underline-offset-2 transition hover:text-keros-amber hover:decoration-keros-amber">Alexandru Simionov</a></p>
+           class="inline-block py-1.5 font-medium text-slate-400 underline decoration-slate-600 underline-offset-2 transition hover:text-keros-amber hover:decoration-keros-amber">Alexandru Simionov</a></p>
     </footer>
   </main>
 

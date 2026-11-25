@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Fixed
+- **Mobile layout** (phones up to 639 px wide). Tablets and desktop are unchanged.
+  - Hourly chart axis labels overlapped (`15:0018:0021:00…`). They now show every 6 hours on phones.
+  - 7-day chart day names touched each other (`Sâm.Dum.`). They now use a smaller font on phones.
+  - The 7 day cards took four rows. They're now one swipeable row.
+  - The current-conditions card was very tall. The illustration now sits beside the city name, and feels like / humidity / wind sit side by side.
+  - The search placeholder was cut off. Phones get a short one ("Caută un oraș…").
+  - The footer link was too small to tap comfortably (15 px). It's now at least 24 px tall.
+
 ## [1.0.0] - 2026-11-25
 
 This is the first public release. The public contracts below are **v1**.

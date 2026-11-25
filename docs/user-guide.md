@@ -24,7 +24,7 @@ The app remembers the last city you viewed and opens it next time. If that city 
 - **Feels like / Humidity / Wind:** apparent temperature, relative humidity, and wind speed in km/h at 10 m height.
 
 ### 7-day forecast
-- **Day cards:** weekday, date, an icon, high / low temperature, and the chance of precipitation (drop icon). Today's card is highlighted.
+- **Day cards:** weekday, date, an icon, high / low temperature, and the chance of precipitation (drop icon). Today's card is highlighted. On a phone the days form one row: swipe sideways to see the rest of the week.
 - **Range chart:** one bar per day, from that day's minimum to its maximum temperature. Hover a bar for the full day name, the condition, min / max and the precipitation chance.
 - **See a day hour by hour:** click a day card, or its bar in the range chart.
   - The selected card is outlined in amber.

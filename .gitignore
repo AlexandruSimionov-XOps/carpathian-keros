@@ -16,6 +16,18 @@ htmlcov/
 .env
 .env.*
 
+# OpenTofu: providers cache, local state and account-specific values (examples are committed as *.example)
+# The provider lock files (.terraform.lock.hcl) ARE committed.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+*.tfvars
+!*.tfvars.example
+backend.hcl
+crash.log
+
 # Windows metadata added when files are copied into WSL (e.g. "logo.jpg:Zone.Identifier")
 *:Zone.Identifier
 

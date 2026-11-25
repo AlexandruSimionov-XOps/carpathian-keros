@@ -25,6 +25,8 @@ env:
   HADOLINT_IMAGE: hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d
   GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
   TRIVY_IMAGE: aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
+  TFLINT_IMAGE: ghcr.io/terraform-linters/tflint:v0.66.0@sha256:65b9944a9274c4989492c1d79998c2801664bf8a55fddb4bd3a9e6d73a006ddc
+  TOFU_VERSION: "1.13.10"
 
 jobs:
   # ruff: code style, common bugs, formatting
@@ -144,6 +146,47 @@ jobs:
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$TRIVY_IMAGE"
           image --no-progress --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
           carpathian-keros:ci
+
+  # OpenTofu code in infra/ and infra/bootstrap/: format, validate and test (mocked provider, no GCP access),
+  # tflint with the Google ruleset, Trivy misconfiguration scan. Never touches real state or credentials.
+  infra:
+    name: Infrastructure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+          tofu_wrapper: false
+      - name: Check formatting
+        run: tofu fmt -check -recursive -diff infra
+      - name: Validate
+        run: |
+          for dir in infra/bootstrap infra; do
+            tofu -chdir="$dir" init -backend=false -input=false
+            tofu -chdir="$dir" validate
+          done
+      - name: Run infrastructure tests
+        # Google provider mocked: checks Workload Identity trust, Cloud Run sizing, IAM scope, budget, state bucket
+        run: |
+          tofu -chdir=infra/bootstrap test
+          tofu -chdir=infra test
+      - name: Lint with tflint
+        env:
+          GITHUB_TOKEN: ${{ github.token }} # read-only; avoids rate limits when tflint downloads its Google ruleset
+        run: |
+          docker run --rm -v "$PWD/infra:/data" -w /data -e GITHUB_TOKEN -e TFLINT_PLUGIN_DIR=/data/.terraform/tflint-plugins "$TFLINT_IMAGE" --init
+          docker run --rm -v "$PWD/infra:/data" -w /data -e TFLINT_PLUGIN_DIR=/data/.terraform/tflint-plugins "$TFLINT_IMAGE" --recursive --config=/data/.tflint.hcl
+      - name: Scan for misconfigurations
+        # Trivy config: fails on MEDIUM, HIGH or CRITICAL findings
+        run: >-
+          docker run --rm -v "$PWD/infra:/src:ro" "$TRIVY_IMAGE"
+          config --skip-dirs .terraform --severity MEDIUM,HIGH,CRITICAL --exit-code 1 /src
 
   # Playwright: desktop and phone layouts, interactions, no console or CSP errors. Needs network.
   e2e:

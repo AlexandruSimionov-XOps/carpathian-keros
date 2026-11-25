@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars (git-ignored) and fill in. Everything else has a default in variables.tf.
+project_id         = "your-project-id"
+billing_account_id = "XXXXXX-XXXXXX-XXXXXX" # gcloud billing projects describe your-project-id
+
+# Optional overrides:
+# region          = "europe-west1"
+# budget_amount   = 1
+# budget_currency = "EUR"   # must match the billing account's currency

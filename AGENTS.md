@@ -20,6 +20,7 @@ Weather comes from Open-Meteo (no API key). The city list comes from Wikipedia.
 | Data | Generated JSON, committed | `data/cities_ro.json` (built by `scripts/build_cities.py`) |
 | UI | Jinja2 + Tailwind (CDN) + GSAP + ApexCharts, plain ES2020, no build step | `templates/`, `static/` |
 | Production runtime | gunicorn in a two-stage Docker image (non-root, allow-list build context); target: Google Cloud Run | `Dockerfile`, `.dockerignore`, `gunicorn.conf.py` |
+| Infrastructure | OpenTofu: Cloud Run (europe-west1), Artifact Registry, Workload Identity Federation, budget alert, GCS state; guide in `docs/infrastructure.md` | `infra/`, `infra/bootstrap/` |
 | Tests | pytest (unit/API/PDF, offline), Node's test runner (JS), Playwright (opt-in e2e), container tests (opt-in) | `tests/` |
 | Versioning | SemVer; `version` in `pyproject.toml`, history in `CHANGELOG.md` | currently **1.0.0** |
 | Docs | Markdown | `docs/`; start at `docs/README.md`, agents also read `docs/ai-agents.md` |
@@ -154,6 +155,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
    | JS unit | Node `node:test` (run by `tests/test_javascript.py`) | `tests/js/` | `formatNumber` rounding, en/ro key parity, autocomplete ranking, completion, `resolveInput` |
    | Frontend | Playwright (opt-in) | `tests/e2e/` | presets order, RO/EN toggle, autocomplete keys (↑↓ Enter Tab Esc), no page errors or CSP violations **after** a city or language change |
    | Container | pytest + Docker CLI (opt-in, `CK_DOCKER=1`) | `tests/docker/` | `/healthz`, API, PDF diacritics (fonts in the image), non-root user, no errors in startup logs, image contents and size, no pip, SIGTERM shutdown |
+   | Infrastructure | `tofu test` with a **mocked** Google provider (no credentials, nothing created) + pytest policy checks | `infra/tests/`, `infra/bootstrap/tests/`, `tests/unit/test_infra_policy.py` | WIF trusts only this repo's `deploy.yml` on `main`/`v*` tags, Cloud Run free-tier sizing and probes, resource-scoped IAM, image cleanup, budget, state bucket privacy, input validation; no SA keys, no project-wide IAM, `allUsers` only as the public invoker |
 
    In e2e tests, wait with `expect(...)`, never `page.wait_for_function("<string>")`. String predicates need `eval`, which the CSP blocks, and the CSP must not be loosened for tests.
 
@@ -219,6 +221,7 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 | Browser → Flask | Untrusted | Validation as in V.1. Read-only `GET` endpoints, no state changes, no cookies or sessions. |
 | Flask → `api.open-meteo.com` | Semi-trusted | The **only** outbound host at runtime. Timeouts (3 s connect / 8 s read) and bounded retries are mandatory on every outbound call. |
 | `scripts/build_cities.py` → Wikipedia, Open-Meteo Geocoding | Untrusted | Offline only. Review the generated diff before committing (Article VI). |
+| GitHub Actions → Google Cloud | Federated, least privilege | **Workload Identity Federation only, never service-account keys.** The trust condition pins the repository and owner by **numeric ID**, the `deploy.yml` workflow, and `main`/`v*` refs. The deployer has resource-scoped roles only (push to one repository, deploy one service, act as `ck-runtime`). The app's runtime account has **no roles**. No project-wide IAM. Any change to `infra/wif.tf` or `infra/iam.tf` is security-sensitive (V.4). |
 | Container image → its host (Docker, Cloud Run) | Least privilege | Runs as uid 10001 (no home, no shell), with app files owned by root. `.dockerignore` is an **allow-list**: add a path there only if the running app needs it. **Never** put secrets, `.env` files or credentials into the image or a build arg; inject them at runtime (Cloud Run secrets / env). `/healthz` stays dependency-free. |
 | Browser → CDNs (Tailwind, jsDelivr) | Third-party | Versions pinned in `index.html`. jsDelivr scripts carry Subresource Integrity (`integrity="sha384-…"` + `crossorigin="anonymous"`). **When you bump a version, recompute the hash**, or the browser refuses to load the file. Fonts are self-hosted (`static/fonts/`). |
 
@@ -279,7 +282,7 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 | Open-Meteo | CC BY 4.0 | UI footer and PDF footer |
 | Wikipedia city list | CC BY-SA 4.0 | UI footer, and the `license` / `source` fields in `data/cities_ro.json` |
 
-  - **Dependency licences:** Flask (BSD-3), requests (Apache-2.0), fpdf2 (LGPL-3.0, used unmodified as a library), GSAP (GreenSock standard licence), ApexCharts (MIT), Tailwind (MIT), Inter font (SIL OFL 1.1, licence shipped in `static/fonts/OFL.txt`), gunicorn (MIT). In the Docker image: the Python base image (PSF + Debian packages) and DejaVu fonts (Bitstream Vera licence, free). Dev only: pytest (MIT), pypdf (BSD-3), ruff (MIT), pip-audit (Apache-2.0), PyYAML (MIT), Playwright (Apache-2.0). CI tools (run as containers, not shipped): hadolint (GPL-3.0), gitleaks (MIT), Trivy (Apache-2.0). Before adding a dependency, check that its licence is compatible and note it in the PR.
+  - **Dependency licences:** Flask (BSD-3), requests (Apache-2.0), fpdf2 (LGPL-3.0, used unmodified as a library), GSAP (GreenSock standard licence), ApexCharts (MIT), Tailwind (MIT), Inter font (SIL OFL 1.1, licence shipped in `static/fonts/OFL.txt`), gunicorn (MIT). In the Docker image: the Python base image (PSF + Debian packages) and DejaVu fonts (Bitstream Vera licence, free). Dev only: pytest (MIT), pypdf (BSD-3), ruff (MIT), pip-audit (Apache-2.0), PyYAML (MIT), Playwright (Apache-2.0). CI tools (run as containers, not shipped): hadolint (GPL-3.0), gitleaks (MIT), Trivy (Apache-2.0). Infrastructure tooling (not shipped): OpenTofu, the Google provider, tflint and its Google ruleset (all MPL-2.0). Before adding a dependency, check that its licence is compatible and note it in the PR.
   - **Open-Meteo's free tier is non-commercial.** Commercial use needs an Open-Meteo subscription; flag this to the user if the use changes.
 
 **Privacy:** no tracking and no analytics. The only data stored on the client is `ck-lang` / `ck-city` in `localStorage`, and the server stores nothing. Any new data collection needs the user's approval and a docs entry.
@@ -289,8 +292,9 @@ Validate every input **at the boundary where it enters**, against an allow-list,
   - Python packages: `requirements.txt` (runtime), `requirements-dev.txt` (tooling), `requirements-e2e.txt` (Playwright)
   - the Docker base image: by **digest**
   - GitHub Actions: by **full commit SHA**, with the version in a comment
-  - CI tool images (hadolint, gitleaks, Trivy): by **digest**
-- **Dependabot** opens weekly PRs into `development` for pip packages, actions and the base image. CI then rebuilds, re-tests and re-scans everything.
+  - CI tool images (hadolint, gitleaks, Trivy, tflint): by **digest**
+  - OpenTofu providers: version constraint `~> 8.12` plus the committed `.terraform.lock.hcl` (checksums for Linux, macOS, Windows); the tflint Google ruleset by exact version in `infra/.tflint.hcl`
+- **Dependabot** opens weekly PRs into `development` for pip packages, actions, the base image and the OpenTofu Google provider. CI then rebuilds, re-tests and re-scans everything.
 - **CI security gates:**
   - `pip-audit` (Python dependencies)
   - **Trivy** (the whole image, including Debian packages and anything vendored; fails on fixable HIGH/CRITICAL)
@@ -340,6 +344,7 @@ hotfix/… (from main) ──PR──▶ main ──▶ tag ──▶ merge main
 | `data/` | Regenerating `data/cities_ro.json` | `data/refresh-city-list-2027` | `feat:` / `fix:` | MINOR (cities added) / PATCH (corrections) |
 | `i18n/` | Translation additions or corrections | `i18n/hungarian-language` | `feat:` / `fix:` | MINOR / PATCH |
 | `ci/` | CI/CD pipelines and workflows | `ci/pytest-on-pull-request` | `ci:` | none |
+| `infra/` | OpenTofu code in `infra/` (Google Cloud resources) | `infra/opentofu-cloud-run` | `feat(infra):` / `fix(infra):` / `chore(infra):` | none (unless it changes a public contract) |
 | `chore/` | Tooling and housekeeping not covered above | `chore/add-ruff-config` | `chore:` | none |
 | `release/` | Preparing a release on `development`: version bump, finalize `CHANGELOG.md` | `release/1.2.0` | `chore(release):` | — |
 | `experiment/` | Spikes and prototypes. **Never merged**; the result is re-done on a proper branch | `experiment/leaflet-map` | — | — |
@@ -361,6 +366,7 @@ hotfix/… (from main) ──PR──▶ main ──▶ tag ──▶ merge main
 - PRs target `development`, except `hotfix/*` and release PRs (`development` → `main`), which target `main`.
 - Follow the commit attribution the session or the user specifies.
 - Never rewrite published history.
+- **Never run `tofu apply`, `tofu destroy`, `tofu import`, `tofu state …` or any command that changes Google Cloud resources** (including `gcloud … create/delete/update`). Agents write and test infrastructure code (`fmt`, `validate`, `test` with the mocked provider, tflint, Trivy); the user reviews the plan and applies it with their own account. `tofu plan` against real state only when the user asks.
 
 ---
 
@@ -368,10 +374,16 @@ hotfix/… (from main) ──PR──▶ main ──▶ tag ──▶ merge main
 
 The constitution describes the target state. These items aren't in place yet. Don't pretend they are, and set them up when a task touches them (or when the user asks):
 
-- **CI checks aren't required yet.** `.github/workflows/ci.yml` runs on every PR into `development` and `main`, but GitHub only blocks a merge once the checks are marked required. Still to do in the rulesets for **both** branches: PR required, no force-push, no deletion, and these status checks required: `Lint`, `Unit & API Tests`, `Dependency Audit`, `Secret Scan`, `Container Build & Scan`, `Browser Tests`. Workflow, job and step names stay short, readable and parenthesis-free; tool details go in YAML comments (`test_names_are_short_and_readable`). Don't restrict the repo to squash-merge only: release PRs (`development` → `main`) need merge commits.
+- **CI checks aren't required yet.** `.github/workflows/ci.yml` runs on every PR into `development` and `main`, but GitHub only blocks a merge once the checks are marked required. Still to do in the rulesets for **both** branches: PR required, no force-push, no deletion, and these status checks required: `Lint`, `Unit & API Tests`, `Dependency Audit`, `Secret Scan`, `Container Build & Scan`, `Infrastructure`, `Browser Tests`. Workflow, job and step names stay short, readable and parenthesis-free; tool details go in YAML comments (`test_names_are_short_and_readable`). Don't restrict the repo to squash-merge only: release PRs (`development` → `main`) need merge commits.
 - **Tailwind Play CDN.** It can't carry an SRI hash (its content isn't pinned by hash), and it injects `<style>`, so the CSP needs `style-src 'unsafe-inline'`. Fix: compile Tailwind with its CLI into `static/css/` and drop the CDN. ApexCharts also sets inline styles, so check whether `'unsafe-inline'` can actually be removed afterwards.
 - **No HSTS header.** It belongs where TLS terminates (`Strict-Transport-Security`), not in the app, which also runs over plain HTTP locally. On Cloud Run, Google's front end terminates TLS but doesn't add HSTS. Add it when deploying, only for requests that arrived over HTTPS (`X-Forwarded-Proto: https`).
-- **Not deployed yet.** The image is built, tested and scanned in CI; deployment to Google Cloud Run (CD, with Workload Identity Federation instead of stored keys) is next. The CD PR must also add its status badge to the README, next to the CI badge, in the same style: `[![<Workflow name>](…/actions/workflows/<file>.yml/badge.svg?branch=main)](…/actions/workflows/<file>.yml)`, tracking `main`, because deploys come from releases.
+- **Not deployed yet.**
+  - **Ready:** the image is built, tested and scanned in CI, and the infrastructure code in `infra/` is written and tested.
+  - **Next, by the user:** the first `tofu apply` (`docs/infrastructure.md`).
+  - **Then:** the deploy workflow `.github/workflows/deploy.yml` (CD on `v*` tags via Workload Identity Federation, using the GitHub variables listed in `docs/infrastructure.md`).
+  - **Manual, outside IaC:** the custom URL `carpathian-keros.cloud.run`. It's a Cloud Run Preview feature, not supported by Terraform/OpenTofu, and it needs `roles/run.admin`, which the deployer deliberately lacks. The user claims it once with `gcloud beta run domain-mappings create`. Never delete that mapping: the name becomes claimable by anyone immediately. Keep the default `run.app` URL enabled as a fallback.
+
+  The CD PR must also add its status badge to the README, next to the CI badge, in the same style: `[![<Workflow name>](…/actions/workflows/<file>.yml/badge.svg?branch=main)](…/actions/workflows/<file>.yml)`, tracking `main`, because deploys come from releases.
 
 ## Working agreements
 

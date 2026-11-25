@@ -42,6 +42,8 @@ The Carpathian Keros logos (`assets/brand/`) and the images generated from them 
 
 CI also runs hadolint (GPL-3.0), gitleaks (MIT) and Trivy (Apache-2.0) as containers. They check the code but aren't part of it or of the image.
 
+The infrastructure code in `infra/` uses OpenTofu, the `hashicorp/google` provider, tflint and the tflint Google ruleset (all MPL-2.0). These are tools; none of them is redistributed.
+
 ## In the Docker image
 
 A **published** image redistributes the runtime packages above, plus:

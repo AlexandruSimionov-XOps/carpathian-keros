@@ -1,0 +1,31 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets / local config (AGENTS.md V.3)
+.env
+.env.*
+
+# Windows metadata added when files are copied into WSL (e.g. "logo.jpg:Zone.Identifier")
+*:Zone.Identifier
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local runtime output
+*.log
+*.pdf

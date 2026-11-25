@@ -1,0 +1,2879 @@
+{
+ "source": "https://ro.wikipedia.org/wiki/Lista_ora%C8%99elor_din_Rom%C3%A2nia",
+ "license": "CC BY-SA 4.0 (Wikipedia); coordinates from Open-Meteo Geocoding (GeoNames, CC BY 4.0)",
+ "retrieved": "2026-11-25",
+ "count": 319,
+ "cities": [
+  {
+   "name": "Abrud",
+   "county": "Alba",
+   "population": 4360,
+   "county_seat": false,
+   "latitude": 46.27406,
+   "longitude": 23.06339,
+   "elevation": 598.0
+  },
+  {
+   "name": "Adjud",
+   "county": "Vrancea",
+   "population": 15178,
+   "county_seat": false,
+   "latitude": 46.09911,
+   "longitude": 27.18143,
+   "elevation": 103.0
+  },
+  {
+   "name": "Agnita",
+   "county": "Sibiu",
+   "population": 7564,
+   "county_seat": false,
+   "latitude": 45.96667,
+   "longitude": 24.61667,
+   "elevation": 464.0
+  },
+  {
+   "name": "Aiud",
+   "county": "Alba",
+   "population": 21307,
+   "county_seat": false,
+   "latitude": 46.31006,
+   "longitude": 23.72128,
+   "elevation": 254.0
+  },
+  {
+   "name": "Alba Iulia",
+   "county": "Alba",
+   "population": 64227,
+   "county_seat": true,
+   "latitude": 46.06667,
+   "longitude": 23.58333,
+   "elevation": 219.0
+  },
+  {
+   "name": "Aleșd",
+   "county": "Bihor",
+   "population": 9662,
+   "county_seat": false,
+   "latitude": 47.05811,
+   "longitude": 22.3995,
+   "elevation": 233.0
+  },
+  {
+   "name": "Alexandria",
+   "county": "Teleorman",
+   "population": 40390,
+   "county_seat": true,
+   "latitude": 43.98333,
+   "longitude": 25.33333,
+   "elevation": 48.0
+  },
+  {
+   "name": "Amara",
+   "county": "Ialomița",
+   "population": 6805,
+   "county_seat": false,
+   "latitude": 44.61667,
+   "longitude": 27.31667,
+   "elevation": 28.0
+  },
+  {
+   "name": "Anina",
+   "county": "Caraș-Severin",
+   "population": 5521,
+   "county_seat": false,
+   "latitude": 45.07944,
+   "longitude": 21.85694,
+   "elevation": 755.0
+  },
+  {
+   "name": "Aninoasa",
+   "county": "Hunedoara",
+   "population": 3369,
+   "county_seat": false,
+   "latitude": 45.40924,
+   "longitude": 23.31505,
+   "elevation": 643.0
+  },
+  {
+   "name": "Arad",
+   "county": "Arad",
+   "population": 145078,
+   "county_seat": true,
+   "latitude": 46.18333,
+   "longitude": 21.31667,
+   "elevation": 109.0
+  },
+  {
+   "name": "Ardud",
+   "county": "Satu Mare",
+   "population": 6124,
+   "county_seat": false,
+   "latitude": 47.63333,
+   "longitude": 22.88333,
+   "elevation": 129.0
+  },
+  {
+   "name": "Avrig",
+   "county": "Sibiu",
+   "population": 12534,
+   "county_seat": false,
+   "latitude": 45.71667,
+   "longitude": 24.38333,
+   "elevation": 385.0
+  },
+  {
+   "name": "Azuga",
+   "county": "Prahova",
+   "population": 3901,
+   "county_seat": false,
+   "latitude": 45.45,
+   "longitude": 25.55,
+   "elevation": 1058.0
+  },
+  {
+   "name": "Babadag",
+   "county": "Tulcea",
+   "population": 9213,
+   "county_seat": false,
+   "latitude": 44.9,
+   "longitude": 28.71667,
+   "elevation": 61.0
+  },
+  {
+   "name": "Băbeni",
+   "county": "Vâlcea",
+   "population": 7570,
+   "county_seat": false,
+   "latitude": 44.96667,
+   "longitude": 24.23333,
+   "elevation": 205.0
+  },
+  {
+   "name": "Bacău",
+   "county": "Bacău",
+   "population": 136087,
+   "county_seat": true,
+   "latitude": 46.56718,
+   "longitude": 26.91384,
+   "elevation": 165.0
+  },
+  {
+   "name": "Baia de Aramă",
+   "county": "Mehedinți",
+   "population": 4478,
+   "county_seat": false,
+   "latitude": 44.99929,
+   "longitude": 22.80784,
+   "elevation": 278.0
+  },
+  {
+   "name": "Baia de Arieș",
+   "county": "Alba",
+   "population": 3035,
+   "county_seat": false,
+   "latitude": 46.38045,
+   "longitude": 23.28115,
+   "elevation": 478.0
+  },
+  {
+   "name": "Baia Mare",
+   "county": "Maramureș",
+   "population": 108759,
+   "county_seat": true,
+   "latitude": 47.65729,
+   "longitude": 23.56808,
+   "elevation": 220.0
+  },
+  {
+   "name": "Baia Sprie",
+   "county": "Maramureș",
+   "population": 14329,
+   "county_seat": false,
+   "latitude": 47.66189,
+   "longitude": 23.69215,
+   "elevation": 350.0
+  },
+  {
+   "name": "Băicoi",
+   "county": "Prahova",
+   "population": 16722,
+   "county_seat": false,
+   "latitude": 45.03333,
+   "longitude": 25.85,
+   "elevation": 312.0
+  },
+  {
+   "name": "Băile Govora",
+   "county": "Vâlcea",
+   "population": 2158,
+   "county_seat": false,
+   "latitude": 45.08333,
+   "longitude": 24.18333,
+   "elevation": 363.0
+  },
+  {
+   "name": "Băile Herculane",
+   "county": "Caraș-Severin",
+   "population": 3787,
+   "county_seat": false,
+   "latitude": 44.87972,
+   "longitude": 22.4125,
+   "elevation": 147.0
+  },
+  {
+   "name": "Băile Olănești",
+   "county": "Vâlcea",
+   "population": 3750,
+   "county_seat": false,
+   "latitude": 45.2,
+   "longitude": 24.23333,
+   "elevation": 566.0
+  },
+  {
+   "name": "Băile Tușnad",
+   "county": "Harghita",
+   "population": 1372,
+   "county_seat": false,
+   "latitude": 46.144,
+   "longitude": 25.857,
+   "elevation": 719.0
+  },
+  {
+   "name": "Băilești",
+   "county": "Dolj",
+   "population": 15928,
+   "county_seat": false,
+   "latitude": 44.01667,
+   "longitude": 23.35,
+   "elevation": 55.0
+  },
+  {
+   "name": "Bălan",
+   "county": "Harghita",
+   "population": 5414,
+   "county_seat": false,
+   "latitude": 46.6505,
+   "longitude": 25.80834,
+   "elevation": 890.0
+  },
+  {
+   "name": "Bălcești",
+   "county": "Vâlcea",
+   "population": 4235,
+   "county_seat": false,
+   "latitude": 44.61667,
+   "longitude": 23.95,
+   "elevation": 198.0
+  },
+  {
+   "name": "Balș",
+   "county": "Olt",
+   "population": 16114,
+   "county_seat": false,
+   "latitude": 44.35,
+   "longitude": 24.1,
+   "elevation": 133.0
+  },
+  {
+   "name": "Baraolt",
+   "county": "Covasna",
+   "population": 7730,
+   "county_seat": false,
+   "latitude": 46.07514,
+   "longitude": 25.60029,
+   "elevation": 478.0
+  },
+  {
+   "name": "Bârlad",
+   "county": "Vaslui",
+   "population": 52475,
+   "county_seat": false,
+   "latitude": 46.23175,
+   "longitude": 27.66907,
+   "elevation": 70.0
+  },
+  {
+   "name": "Bechet",
+   "county": "Dolj",
+   "population": 4355,
+   "county_seat": false,
+   "latitude": 43.78188,
+   "longitude": 23.95706,
+   "elevation": 37.0
+  },
+  {
+   "name": "Beclean",
+   "county": "Bistrița-Năsăud",
+   "population": 11260,
+   "county_seat": false,
+   "latitude": 47.18333,
+   "longitude": 24.18333,
+   "elevation": 257.0
+  },
+  {
+   "name": "Beiuș",
+   "county": "Bihor",
+   "population": 9745,
+   "county_seat": false,
+   "latitude": 46.66667,
+   "longitude": 22.35,
+   "elevation": 187.0
+  },
+  {
+   "name": "Berbești",
+   "county": "Vâlcea",
+   "population": 4231,
+   "county_seat": false,
+   "latitude": 44.98333,
+   "longitude": 23.88333,
+   "elevation": 359.0
+  },
+  {
+   "name": "Berești",
+   "county": "Galați",
+   "population": 2473,
+   "county_seat": false,
+   "latitude": 46.1,
+   "longitude": 27.88333,
+   "elevation": 174.0
+  },
+  {
+   "name": "Bicaz",
+   "county": "Neamț",
+   "population": 6106,
+   "county_seat": false,
+   "latitude": 46.91667,
+   "longitude": 26.06667,
+   "elevation": 744.0
+  },
+  {
+   "name": "Bistrița",
+   "county": "Bistrița-Năsăud",
+   "population": 78877,
+   "county_seat": true,
+   "latitude": 47.13316,
+   "longitude": 24.50011,
+   "elevation": 362.0
+  },
+  {
+   "name": "Blaj",
+   "county": "Alba",
+   "population": 17816,
+   "county_seat": false,
+   "latitude": 46.17508,
+   "longitude": 23.91578,
+   "elevation": 246.0
+  },
+  {
+   "name": "Bocșa",
+   "county": "Caraș-Severin",
+   "population": 12949,
+   "county_seat": false,
+   "latitude": 45.37333,
+   "longitude": 21.70917,
+   "elevation": 159.0
+  },
+  {
+   "name": "Boldești-Scăeni",
+   "county": "Prahova",
+   "population": 10298,
+   "county_seat": false,
+   "latitude": 45.03333,
+   "longitude": 26.03333,
+   "elevation": 211.0
+  },
+  {
+   "name": "Bolintin-Vale",
+   "county": "Giurgiu",
+   "population": 12806,
+   "county_seat": false,
+   "latitude": 44.44889,
+   "longitude": 25.75778,
+   "elevation": 106.0
+  },
+  {
+   "name": "Borșa",
+   "county": "Maramureș",
+   "population": 27711,
+   "county_seat": false,
+   "latitude": 47.65527,
+   "longitude": 24.66328,
+   "elevation": 658.0
+  },
+  {
+   "name": "Borsec",
+   "county": "Harghita",
+   "population": 2391,
+   "county_seat": false,
+   "latitude": 46.95,
+   "longitude": 25.56667,
+   "elevation": 1064.0
+  },
+  {
+   "name": "Botoșani",
+   "county": "Botoșani",
+   "population": 90010,
+   "county_seat": true,
+   "latitude": 47.75,
+   "longitude": 26.66667,
+   "elevation": 159.0
+  },
+  {
+   "name": "Brad",
+   "county": "Hunedoara",
+   "population": 12690,
+   "county_seat": false,
+   "latitude": 46.13333,
+   "longitude": 22.78333,
+   "elevation": 272.0
+  },
+  {
+   "name": "Bragadiru",
+   "county": "Ilfov",
+   "population": 40080,
+   "county_seat": false,
+   "latitude": 44.37111,
+   "longitude": 25.9775,
+   "elevation": 82.0
+  },
+  {
+   "name": "Brăila",
+   "county": "Brăila",
+   "population": 154686,
+   "county_seat": true,
+   "latitude": 45.27152,
+   "longitude": 27.97429,
+   "elevation": 22.0
+  },
+  {
+   "name": "Brașov",
+   "county": "Brașov",
+   "population": 237589,
+   "county_seat": true,
+   "latitude": 45.64861,
+   "longitude": 25.60613,
+   "elevation": 573.0
+  },
+  {
+   "name": "Breaza",
+   "county": "Prahova",
+   "population": 14871,
+   "county_seat": false,
+   "latitude": 45.18333,
+   "longitude": 25.66667,
+   "elevation": 548.0
+  },
+  {
+   "name": "Brezoi",
+   "county": "Vâlcea",
+   "population": 5696,
+   "county_seat": false,
+   "latitude": 45.33797,
+   "longitude": 24.24863,
+   "elevation": 317.0
+  },
+  {
+   "name": "Broșteni",
+   "county": "Suceava",
+   "population": 5179,
+   "county_seat": false,
+   "latitude": 47.23333,
+   "longitude": 25.7,
+   "elevation": 699.0
+  },
+  {
+   "name": "Bucecea",
+   "county": "Botoșani",
+   "population": 4171,
+   "county_seat": false,
+   "latitude": 47.76667,
+   "longitude": 26.43333,
+   "elevation": 265.0
+  },
+  {
+   "name": "București",
+   "county": null,
+   "population": 1716961,
+   "county_seat": false,
+   "latitude": 44.43225,
+   "longitude": 26.10626,
+   "elevation": 83.0
+  },
+  {
+   "name": "Budești",
+   "county": "Călărași",
+   "population": 7126,
+   "county_seat": false,
+   "latitude": 44.23472,
+   "longitude": 26.46583,
+   "elevation": 32.0
+  },
+  {
+   "name": "Buftea",
+   "county": "Ilfov",
+   "population": 20577,
+   "county_seat": true,
+   "latitude": 44.56139,
+   "longitude": 25.94889,
+   "elevation": 107.0
+  },
+  {
+   "name": "Buhuși",
+   "county": "Bacău",
+   "population": 14152,
+   "county_seat": false,
+   "latitude": 46.71667,
+   "longitude": 26.7,
+   "elevation": 254.0
+  },
+  {
+   "name": "Bumbești-Jiu",
+   "county": "Gorj",
+   "population": 7684,
+   "county_seat": false,
+   "latitude": 45.16667,
+   "longitude": 23.4,
+   "elevation": 380.0
+  },
+  {
+   "name": "Bușteni",
+   "county": "Prahova",
+   "population": 8368,
+   "county_seat": false,
+   "latitude": 45.4,
+   "longitude": 25.53333,
+   "elevation": 900.0
+  },
+  {
+   "name": "Buzău",
+   "county": "Buzău",
+   "population": 103481,
+   "county_seat": true,
+   "latitude": 45.15,
+   "longitude": 26.83333,
+   "elevation": 93.0
+  },
+  {
+   "name": "Buziaș",
+   "county": "Timiș",
+   "population": 6834,
+   "county_seat": false,
+   "latitude": 45.64917,
+   "longitude": 21.60361,
+   "elevation": 125.0
+  },
+  {
+   "name": "Cajvana",
+   "county": "Suceava",
+   "population": 9139,
+   "county_seat": false,
+   "latitude": 47.7,
+   "longitude": 25.96667,
+   "elevation": 389.0
+  },
+  {
+   "name": "Calafat",
+   "county": "Dolj",
+   "population": 13807,
+   "county_seat": false,
+   "latitude": 43.99069,
+   "longitude": 22.93328,
+   "elevation": 53.0
+  },
+  {
+   "name": "Călan",
+   "county": "Hunedoara",
+   "population": 10055,
+   "county_seat": false,
+   "latitude": 45.73333,
+   "longitude": 22.98333,
+   "elevation": 245.0
+  },
+  {
+   "name": "Călărași",
+   "county": "Călărași",
+   "population": 58215,
+   "county_seat": true,
+   "latitude": 44.2051,
+   "longitude": 27.31356,
+   "elevation": 18.0
+  },
+  {
+   "name": "Călimănești",
+   "county": "Vâlcea",
+   "population": 7348,
+   "county_seat": false,
+   "latitude": 45.23333,
+   "longitude": 24.33333,
+   "elevation": 366.0
+  },
+  {
+   "name": "Câmpeni",
+   "county": "Alba",
+   "population": 6569,
+   "county_seat": false,
+   "latitude": 46.36667,
+   "longitude": 23.05,
+   "elevation": 559.0
+  },
+  {
+   "name": "Câmpia Turzii",
+   "county": "Cluj",
+   "population": 20590,
+   "county_seat": false,
+   "latitude": 46.55,
+   "longitude": 23.88333,
+   "elevation": 299.0
+  },
+  {
+   "name": "Câmpina",
+   "county": "Prahova",
+   "population": 28993,
+   "county_seat": false,
+   "latitude": 45.12619,
+   "longitude": 25.73496,
+   "elevation": 443.0
+  },
+  {
+   "name": "Câmpulung",
+   "county": "Argeș",
+   "population": 27574,
+   "county_seat": false,
+   "latitude": 45.26667,
+   "longitude": 25.05,
+   "elevation": 593.0
+  },
+  {
+   "name": "Câmpulung Moldovenesc",
+   "county": "Suceava",
+   "population": 15642,
+   "county_seat": false,
+   "latitude": 47.53333,
+   "longitude": 25.56667,
+   "elevation": 655.0
+  },
+  {
+   "name": "Caracal",
+   "county": "Olt",
+   "population": 27403,
+   "county_seat": false,
+   "latitude": 44.11667,
+   "longitude": 24.35,
+   "elevation": 105.0
+  },
+  {
+   "name": "Caransebeș",
+   "county": "Caraș-Severin",
+   "population": 21714,
+   "county_seat": false,
+   "latitude": 45.41667,
+   "longitude": 22.21667,
+   "elevation": 202.0
+  },
+  {
+   "name": "Carei",
+   "county": "Satu Mare",
+   "population": 18957,
+   "county_seat": false,
+   "latitude": 47.68333,
+   "longitude": 22.46667,
+   "elevation": 139.0
+  },
+  {
+   "name": "Cavnic",
+   "county": "Maramureș",
+   "population": 4264,
+   "county_seat": false,
+   "latitude": 47.64819,
+   "longitude": 23.82211,
+   "elevation": 680.0
+  },
+  {
+   "name": "Căzănești",
+   "county": "Ialomița",
+   "population": 2938,
+   "county_seat": false,
+   "latitude": 44.61667,
+   "longitude": 27.01667,
+   "elevation": 36.0
+  },
+  {
+   "name": "Cehu Silvaniei",
+   "county": "Sălaj",
+   "population": 6369,
+   "county_seat": false,
+   "latitude": 47.41177,
+   "longitude": 23.17489,
+   "elevation": 218.0
+  },
+  {
+   "name": "Cernavodă",
+   "county": "Constanța",
+   "population": 15088,
+   "county_seat": false,
+   "latitude": 44.33957,
+   "longitude": 28.03273,
+   "elevation": 15.0
+  },
+  {
+   "name": "Chișineu-Criș",
+   "county": "Arad",
+   "population": 7212,
+   "county_seat": false,
+   "latitude": 46.52509,
+   "longitude": 21.51844,
+   "elevation": 94.0
+  },
+  {
+   "name": "Chitila",
+   "county": "Ilfov",
+   "population": 14762,
+   "county_seat": false,
+   "latitude": 44.50806,
+   "longitude": 25.98222,
+   "elevation": 93.0
+  },
+  {
+   "name": "Ciacova",
+   "county": "Timiș",
+   "population": 5434,
+   "county_seat": false,
+   "latitude": 45.50806,
+   "longitude": 21.12861,
+   "elevation": 79.0
+  },
+  {
+   "name": "Cisnădie",
+   "county": "Sibiu",
+   "population": 22277,
+   "county_seat": false,
+   "latitude": 45.71667,
+   "longitude": 24.15,
+   "elevation": 455.0
+  },
+  {
+   "name": "Cluj-Napoca",
+   "county": "Cluj",
+   "population": 286598,
+   "county_seat": true,
+   "latitude": 46.76667,
+   "longitude": 23.6,
+   "elevation": 352.0
+  },
+  {
+   "name": "Codlea",
+   "county": "Brașov",
+   "population": 20534,
+   "county_seat": false,
+   "latitude": 45.7,
+   "longitude": 25.45,
+   "elevation": 550.0
+  },
+  {
+   "name": "Comănești",
+   "county": "Bacău",
+   "population": 19996,
+   "county_seat": false,
+   "latitude": 46.42135,
+   "longitude": 26.43645,
+   "elevation": 385.0
+  },
+  {
+   "name": "Comarnic",
+   "county": "Prahova",
+   "population": 11106,
+   "county_seat": false,
+   "latitude": 45.25,
+   "longitude": 25.63333,
+   "elevation": 641.0
+  },
+  {
+   "name": "Constanța",
+   "county": "Constanța",
+   "population": 263688,
+   "county_seat": true,
+   "latitude": 44.18073,
+   "longitude": 28.63432,
+   "elevation": 40.0
+  },
+  {
+   "name": "Copșa Mică",
+   "county": "Sibiu",
+   "population": 4570,
+   "county_seat": false,
+   "latitude": 46.11667,
+   "longitude": 24.25,
+   "elevation": 281.0
+  },
+  {
+   "name": "Corabia",
+   "county": "Olt",
+   "population": 13527,
+   "county_seat": false,
+   "latitude": 43.77513,
+   "longitude": 24.50146,
+   "elevation": 46.0
+  },
+  {
+   "name": "Costești",
+   "county": "Argeș",
+   "population": 9460,
+   "county_seat": false,
+   "latitude": 44.66667,
+   "longitude": 24.88333,
+   "elevation": 231.0
+  },
+  {
+   "name": "Covasna",
+   "county": "Covasna",
+   "population": 9208,
+   "county_seat": false,
+   "latitude": 45.85,
+   "longitude": 26.18333,
+   "elevation": 584.0
+  },
+  {
+   "name": "Craiova",
+   "county": "Dolj",
+   "population": 234140,
+   "county_seat": true,
+   "latitude": 44.31667,
+   "longitude": 23.8,
+   "elevation": 105.0
+  },
+  {
+   "name": "Cristuru Secuiesc",
+   "county": "Harghita",
+   "population": 8797,
+   "county_seat": false,
+   "latitude": 46.28333,
+   "longitude": 25.03333,
+   "elevation": 387.0
+  },
+  {
+   "name": "Cugir",
+   "county": "Alba",
+   "population": 19473,
+   "county_seat": false,
+   "latitude": 45.83651,
+   "longitude": 23.36998,
+   "elevation": 300.0
+  },
+  {
+   "name": "Curtea de Argeș",
+   "county": "Argeș",
+   "population": 25977,
+   "county_seat": false,
+   "latitude": 45.13422,
+   "longitude": 24.67409,
+   "elevation": 421.0
+  },
+  {
+   "name": "Curtici",
+   "county": "Arad",
+   "population": 7279,
+   "county_seat": false,
+   "latitude": 46.35,
+   "longitude": 21.3,
+   "elevation": 100.0
+  },
+  {
+   "name": "Dăbuleni",
+   "county": "Dolj",
+   "population": 10333,
+   "county_seat": false,
+   "latitude": 43.8,
+   "longitude": 24.08333,
+   "elevation": 55.0
+  },
+  {
+   "name": "Darabani",
+   "county": "Botoșani",
+   "population": 11948,
+   "county_seat": false,
+   "latitude": 48.18333,
+   "longitude": 26.58333,
+   "elevation": 222.0
+  },
+  {
+   "name": "Dărmănești",
+   "county": "Bacău",
+   "population": 13069,
+   "county_seat": false,
+   "latitude": 46.36667,
+   "longitude": 26.48333,
+   "elevation": 347.0
+  },
+  {
+   "name": "Dej",
+   "county": "Cluj",
+   "population": 31475,
+   "county_seat": false,
+   "latitude": 47.15,
+   "longitude": 23.86667,
+   "elevation": 231.0
+  },
+  {
+   "name": "Deta",
+   "county": "Timiș",
+   "population": 5670,
+   "county_seat": false,
+   "latitude": 45.38889,
+   "longitude": 21.22444,
+   "elevation": 91.0
+  },
+  {
+   "name": "Deva",
+   "county": "Hunedoara",
+   "population": 53113,
+   "county_seat": true,
+   "latitude": 45.88333,
+   "longitude": 22.9,
+   "elevation": 196.0
+  },
+  {
+   "name": "Dolhasca",
+   "county": "Suceava",
+   "population": 11007,
+   "county_seat": false,
+   "latitude": 47.43333,
+   "longitude": 26.6,
+   "elevation": 231.0
+  },
+  {
+   "name": "Dorohoi",
+   "county": "Botoșani",
+   "population": 22893,
+   "county_seat": false,
+   "latitude": 47.95,
+   "longitude": 26.4,
+   "elevation": 151.0
+  },
+  {
+   "name": "Drăgănești-Olt",
+   "county": "Olt",
+   "population": 9721,
+   "county_seat": false,
+   "latitude": 44.16667,
+   "longitude": 24.53333,
+   "elevation": 82.0
+  },
+  {
+   "name": "Drăgășani",
+   "county": "Vâlcea",
+   "population": 15617,
+   "county_seat": false,
+   "latitude": 44.65,
+   "longitude": 24.26667,
+   "elevation": 155.0
+  },
+  {
+   "name": "Dragomirești",
+   "county": "Maramureș",
+   "population": 3154,
+   "county_seat": false,
+   "latitude": 47.66839,
+   "longitude": 24.29111,
+   "elevation": 434.0
+  },
+  {
+   "name": "Drobeta-Turnu Severin",
+   "county": "Mehedinți",
+   "population": 79865,
+   "county_seat": true,
+   "latitude": 44.62693,
+   "longitude": 22.65288,
+   "elevation": 76.0
+  },
+  {
+   "name": "Dumbrăveni",
+   "county": "Sibiu",
+   "population": 6238,
+   "county_seat": false,
+   "latitude": 46.23333,
+   "longitude": 24.56667,
+   "elevation": 349.0
+  },
+  {
+   "name": "Eforie",
+   "county": "Constanța",
+   "population": 8630,
+   "county_seat": false,
+   "latitude": 44.03973,
+   "longitude": 28.64685,
+   "elevation": 13.0
+  },
+  {
+   "name": "Făgăraș",
+   "county": "Brașov",
+   "population": 26284,
+   "county_seat": false,
+   "latitude": 45.85,
+   "longitude": 24.96667,
+   "elevation": 420.0
+  },
+  {
+   "name": "Făget",
+   "county": "Timiș",
+   "population": 6595,
+   "county_seat": false,
+   "latitude": 45.85,
+   "longitude": 22.18333,
+   "elevation": 150.0
+  },
+  {
+   "name": "Fălticeni",
+   "county": "Suceava",
+   "population": 23902,
+   "county_seat": false,
+   "latitude": 47.45,
+   "longitude": 26.3,
+   "elevation": 307.0
+  },
+  {
+   "name": "Făurei",
+   "county": "Brăila",
+   "population": 3008,
+   "county_seat": false,
+   "latitude": 45.08333,
+   "longitude": 27.26667,
+   "elevation": 42.0
+  },
+  {
+   "name": "Fetești",
+   "county": "Ialomița",
+   "population": 27462,
+   "county_seat": false,
+   "latitude": 44.38333,
+   "longitude": 27.83333,
+   "elevation": 59.0
+  },
+  {
+   "name": "Fieni",
+   "county": "Dâmbovița",
+   "population": 6378,
+   "county_seat": false,
+   "latitude": 45.13333,
+   "longitude": 25.41667,
+   "elevation": 486.0
+  },
+  {
+   "name": "Fierbinți-Târg",
+   "county": "Ialomița",
+   "population": 4620,
+   "county_seat": false,
+   "latitude": 44.682,
+   "longitude": 26.401,
+   "elevation": 62.0
+  },
+  {
+   "name": "Filiași",
+   "county": "Dolj",
+   "population": 15031,
+   "county_seat": false,
+   "latitude": 44.55,
+   "longitude": 23.51667,
+   "elevation": 106.0
+  },
+  {
+   "name": "Flămânzi",
+   "county": "Botoșani",
+   "population": 10561,
+   "county_seat": false,
+   "latitude": 47.55,
+   "longitude": 26.86667,
+   "elevation": 164.0
+  },
+  {
+   "name": "Focșani",
+   "county": "Vrancea",
+   "population": 66648,
+   "county_seat": true,
+   "latitude": 45.7,
+   "longitude": 27.18333,
+   "elevation": 54.0
+  },
+  {
+   "name": "Frasin",
+   "county": "Suceava",
+   "population": 5817,
+   "county_seat": false,
+   "latitude": 47.53333,
+   "longitude": 25.8,
+   "elevation": 505.0
+  },
+  {
+   "name": "Fundulea",
+   "county": "Călărași",
+   "population": 6714,
+   "county_seat": false,
+   "latitude": 44.46667,
+   "longitude": 26.51667,
+   "elevation": 64.0
+  },
+  {
+   "name": "Găești",
+   "county": "Dâmbovița",
+   "population": 12583,
+   "county_seat": false,
+   "latitude": 44.71667,
+   "longitude": 25.31667,
+   "elevation": 186.0
+  },
+  {
+   "name": "Galați",
+   "county": "Galați",
+   "population": 217851,
+   "county_seat": true,
+   "latitude": 45.43687,
+   "longitude": 28.05028,
+   "elevation": 24.0
+  },
+  {
+   "name": "Gătaia",
+   "county": "Timiș",
+   "population": 5473,
+   "county_seat": false,
+   "latitude": 45.43111,
+   "longitude": 21.43,
+   "elevation": 109.0
+  },
+  {
+   "name": "Geoagiu",
+   "county": "Hunedoara",
+   "population": 5087,
+   "county_seat": false,
+   "latitude": 45.91667,
+   "longitude": 23.2,
+   "elevation": 213.0
+  },
+  {
+   "name": "Gheorgheni",
+   "county": "Harghita",
+   "population": 15884,
+   "county_seat": false,
+   "latitude": 46.72292,
+   "longitude": 25.60055,
+   "elevation": 816.0
+  },
+  {
+   "name": "Gherla",
+   "county": "Cluj",
+   "population": 19873,
+   "county_seat": false,
+   "latitude": 47.03333,
+   "longitude": 23.91667,
+   "elevation": 250.0
+  },
+  {
+   "name": "Ghimbav",
+   "county": "Brașov",
+   "population": 7208,
+   "county_seat": false,
+   "latitude": 45.66667,
+   "longitude": 25.5,
+   "elevation": 557.0
+  },
+  {
+   "name": "Giurgiu",
+   "county": "Giurgiu",
+   "population": 54551,
+   "county_seat": true,
+   "latitude": 43.88664,
+   "longitude": 25.9627,
+   "elevation": 27.0
+  },
+  {
+   "name": "Gura Humorului",
+   "county": "Suceava",
+   "population": 13278,
+   "county_seat": false,
+   "latitude": 47.55,
+   "longitude": 25.9,
+   "elevation": 463.0
+  },
+  {
+   "name": "Hârlău",
+   "county": "Iași",
+   "population": 10349,
+   "county_seat": false,
+   "latitude": 47.43333,
+   "longitude": 26.9,
+   "elevation": 153.0
+  },
+  {
+   "name": "Hârșova",
+   "county": "Constanța",
+   "population": 8737,
+   "county_seat": false,
+   "latitude": 44.68555,
+   "longitude": 27.95009,
+   "elevation": 17.0
+  },
+  {
+   "name": "Hațeg",
+   "county": "Hunedoara",
+   "population": 8793,
+   "county_seat": false,
+   "latitude": 45.61667,
+   "longitude": 22.95,
+   "elevation": 339.0
+  },
+  {
+   "name": "Horezu",
+   "county": "Vâlcea",
+   "population": 6467,
+   "county_seat": false,
+   "latitude": 45.15,
+   "longitude": 24.01667,
+   "elevation": 468.0
+  },
+  {
+   "name": "Huedin",
+   "county": "Cluj",
+   "population": 8069,
+   "county_seat": false,
+   "latitude": 46.86667,
+   "longitude": 23.05,
+   "elevation": 595.0
+  },
+  {
+   "name": "Hunedoara",
+   "county": "Hunedoara",
+   "population": 50457,
+   "county_seat": false,
+   "latitude": 45.75,
+   "longitude": 22.9,
+   "elevation": 236.0
+  },
+  {
+   "name": "Huși",
+   "county": "Vaslui",
+   "population": 25045,
+   "county_seat": false,
+   "latitude": 46.67361,
+   "longitude": 28.05944,
+   "elevation": 98.0
+  },
+  {
+   "name": "Ianca",
+   "county": "Brăila",
+   "population": 8969,
+   "county_seat": false,
+   "latitude": 45.13333,
+   "longitude": 27.45,
+   "elevation": 31.0
+  },
+  {
+   "name": "Iași",
+   "county": "Iași",
+   "population": 271692,
+   "county_seat": true,
+   "latitude": 47.16667,
+   "longitude": 27.6,
+   "elevation": 66.0
+  },
+  {
+   "name": "Iernut",
+   "county": "Mureș",
+   "population": 8473,
+   "county_seat": false,
+   "latitude": 46.45,
+   "longitude": 24.25,
+   "elevation": 275.0
+  },
+  {
+   "name": "Ineu",
+   "county": "Arad",
+   "population": 8807,
+   "county_seat": false,
+   "latitude": 46.43372,
+   "longitude": 21.84048,
+   "elevation": 107.0
+  },
+  {
+   "name": "Însurăței",
+   "county": "Brăila",
+   "population": 5870,
+   "county_seat": false,
+   "latitude": 44.91667,
+   "longitude": 27.6,
+   "elevation": 25.0
+  },
+  {
+   "name": "Întorsura Buzăului",
+   "county": "Covasna",
+   "population": 8332,
+   "county_seat": false,
+   "latitude": 45.68333,
+   "longitude": 26.03333,
+   "elevation": 763.0
+  },
+  {
+   "name": "Isaccea",
+   "county": "Tulcea",
+   "population": 4408,
+   "county_seat": false,
+   "latitude": 45.26667,
+   "longitude": 28.46667,
+   "elevation": 8.0
+  },
+  {
+   "name": "Jibou",
+   "county": "Sălaj",
+   "population": 9677,
+   "county_seat": false,
+   "latitude": 47.25896,
+   "longitude": 23.25651,
+   "elevation": 191.0
+  },
+  {
+   "name": "Jimbolia",
+   "county": "Timiș",
+   "population": 10179,
+   "county_seat": false,
+   "latitude": 45.79139,
+   "longitude": 20.71722,
+   "elevation": 83.0
+  },
+  {
+   "name": "Lehliu Gară",
+   "county": "Călărași",
+   "population": 5991,
+   "county_seat": false,
+   "latitude": 44.43333,
+   "longitude": 26.85,
+   "elevation": 51.0
+  },
+  {
+   "name": "Lipova",
+   "county": "Arad",
+   "population": 10040,
+   "county_seat": false,
+   "latitude": 46.09085,
+   "longitude": 21.69628,
+   "elevation": 129.0
+  },
+  {
+   "name": "Liteni",
+   "county": "Suceava",
+   "population": 8878,
+   "county_seat": false,
+   "latitude": 47.52049,
+   "longitude": 26.5283,
+   "elevation": 247.0
+  },
+  {
+   "name": "Livada",
+   "county": "Satu Mare",
+   "population": 5892,
+   "county_seat": false,
+   "latitude": 47.86667,
+   "longitude": 23.13333,
+   "elevation": 132.0
+  },
+  {
+   "name": "Luduș",
+   "county": "Mureș",
+   "population": 14757,
+   "county_seat": false,
+   "latitude": 46.48333,
+   "longitude": 24.1,
+   "elevation": 272.0
+  },
+  {
+   "name": "Lugoj",
+   "county": "Timiș",
+   "population": 35450,
+   "county_seat": false,
+   "latitude": 45.68861,
+   "longitude": 21.90306,
+   "elevation": 122.0
+  },
+  {
+   "name": "Lupeni",
+   "county": "Hunedoara",
+   "population": 18699,
+   "county_seat": false,
+   "latitude": 45.36029,
+   "longitude": 23.23832,
+   "elevation": 634.0
+  },
+  {
+   "name": "Măcin",
+   "county": "Tulcea",
+   "population": 7248,
+   "county_seat": false,
+   "latitude": 45.24371,
+   "longitude": 28.13564,
+   "elevation": 36.0
+  },
+  {
+   "name": "Măgurele",
+   "county": "Ilfov",
+   "population": 14414,
+   "county_seat": false,
+   "latitude": 44.35,
+   "longitude": 26.03333,
+   "elevation": 76.0
+  },
+  {
+   "name": "Mangalia",
+   "county": "Constanța",
+   "population": 31950,
+   "county_seat": false,
+   "latitude": 43.81623,
+   "longitude": 28.57656,
+   "elevation": 1.0
+  },
+  {
+   "name": "Mărășești",
+   "county": "Vrancea",
+   "population": 11314,
+   "county_seat": false,
+   "latitude": 45.88333,
+   "longitude": 27.23333,
+   "elevation": 58.0
+  },
+  {
+   "name": "Marghita",
+   "county": "Bihor",
+   "population": 13573,
+   "county_seat": false,
+   "latitude": 47.35,
+   "longitude": 22.33333,
+   "elevation": 140.0
+  },
+  {
+   "name": "Medgidia",
+   "county": "Constanța",
+   "population": 34612,
+   "county_seat": false,
+   "latitude": 44.25,
+   "longitude": 28.28333,
+   "elevation": 9.0
+  },
+  {
+   "name": "Mediaș",
+   "county": "Sibiu",
+   "population": 39505,
+   "county_seat": false,
+   "latitude": 46.16667,
+   "longitude": 24.35,
+   "elevation": 301.0
+  },
+  {
+   "name": "Miercurea Ciuc",
+   "county": "Harghita",
+   "population": 34484,
+   "county_seat": true,
+   "latitude": 46.35,
+   "longitude": 25.8,
+   "elevation": 653.0
+  },
+  {
+   "name": "Miercurea Nirajului",
+   "county": "Mureș",
+   "population": 5414,
+   "county_seat": false,
+   "latitude": 46.53333,
+   "longitude": 24.8,
+   "elevation": 347.0
+  },
+  {
+   "name": "Miercurea Sibiului",
+   "county": "Sibiu",
+   "population": 3619,
+   "county_seat": false,
+   "latitude": 45.88333,
+   "longitude": 23.8,
+   "elevation": 326.0
+  },
+  {
+   "name": "Mihăilești",
+   "county": "Giurgiu",
+   "population": 7760,
+   "county_seat": false,
+   "latitude": 44.32667,
+   "longitude": 25.90833,
+   "elevation": 87.0
+  },
+  {
+   "name": "Milișăuți",
+   "county": "Suceava",
+   "population": 4657,
+   "county_seat": false,
+   "latitude": 47.78333,
+   "longitude": 26.0,
+   "elevation": 334.0
+  },
+  {
+   "name": "Mioveni",
+   "county": "Argeș",
+   "population": 29317,
+   "county_seat": false,
+   "latitude": 44.95905,
+   "longitude": 24.94198,
+   "elevation": 326.0
+  },
+  {
+   "name": "Mizil",
+   "county": "Prahova",
+   "population": 12962,
+   "county_seat": false,
+   "latitude": 45.01667,
+   "longitude": 26.45,
+   "elevation": 124.0
+  },
+  {
+   "name": "Moinești",
+   "county": "Bacău",
+   "population": 19728,
+   "county_seat": false,
+   "latitude": 46.47523,
+   "longitude": 26.48907,
+   "elevation": 476.0
+  },
+  {
+   "name": "Moldova Nouă",
+   "county": "Caraș-Severin",
+   "population": 9278,
+   "county_seat": false,
+   "latitude": 44.7375,
+   "longitude": 21.66694,
+   "elevation": 170.0
+  },
+  {
+   "name": "Moreni",
+   "county": "Dâmbovița",
+   "population": 15472,
+   "county_seat": false,
+   "latitude": 44.98301,
+   "longitude": 25.64415,
+   "elevation": 264.0
+  },
+  {
+   "name": "Motru",
+   "county": "Gorj",
+   "population": 15950,
+   "county_seat": false,
+   "latitude": 44.80333,
+   "longitude": 22.97194,
+   "elevation": 182.0
+  },
+  {
+   "name": "Murfatlar",
+   "county": "Constanța",
+   "population": 9173,
+   "county_seat": false,
+   "latitude": 44.18333,
+   "longitude": 28.41667,
+   "elevation": 41.0
+  },
+  {
+   "name": "Murgeni",
+   "county": "Vaslui",
+   "population": 6853,
+   "county_seat": false,
+   "latitude": 46.20444,
+   "longitude": 28.01972,
+   "elevation": 35.0
+  },
+  {
+   "name": "Nădlac",
+   "county": "Arad",
+   "population": 6713,
+   "county_seat": false,
+   "latitude": 46.16667,
+   "longitude": 20.75,
+   "elevation": 89.0
+  },
+  {
+   "name": "Năsăud",
+   "county": "Bistrița-Năsăud",
+   "population": 10215,
+   "county_seat": false,
+   "latitude": 47.28333,
+   "longitude": 24.4,
+   "elevation": 317.0
+  },
+  {
+   "name": "Năvodari",
+   "county": "Constanța",
+   "population": 34398,
+   "county_seat": false,
+   "latitude": 44.31667,
+   "longitude": 28.6,
+   "elevation": 20.0
+  },
+  {
+   "name": "Negrești",
+   "county": "Vaslui",
+   "population": 7530,
+   "county_seat": false,
+   "latitude": 46.83333,
+   "longitude": 27.43333,
+   "elevation": 119.0
+  },
+  {
+   "name": "Negrești-Oaș",
+   "county": "Satu Mare",
+   "population": 14616,
+   "county_seat": false,
+   "latitude": 47.86667,
+   "longitude": 23.43333,
+   "elevation": 253.0
+  },
+  {
+   "name": "Negru Vodă",
+   "county": "Constanța",
+   "population": 4616,
+   "county_seat": false,
+   "latitude": 43.81667,
+   "longitude": 28.2,
+   "elevation": 151.0
+  },
+  {
+   "name": "Nehoiu",
+   "county": "Buzău",
+   "population": 9464,
+   "county_seat": false,
+   "latitude": 45.41667,
+   "longitude": 26.3,
+   "elevation": 392.0
+  },
+  {
+   "name": "Novaci",
+   "county": "Gorj",
+   "population": 5276,
+   "county_seat": false,
+   "latitude": 45.18333,
+   "longitude": 23.66667,
+   "elevation": 491.0
+  },
+  {
+   "name": "Nucet",
+   "county": "Bihor",
+   "population": 1987,
+   "county_seat": false,
+   "latitude": 46.48732,
+   "longitude": 22.5585,
+   "elevation": 392.0
+  },
+  {
+   "name": "Ocna Mureș",
+   "county": "Alba",
+   "population": 12480,
+   "county_seat": false,
+   "latitude": 46.38333,
+   "longitude": 23.85,
+   "elevation": 254.0
+  },
+  {
+   "name": "Ocna Sibiului",
+   "county": "Sibiu",
+   "population": 3434,
+   "county_seat": false,
+   "latitude": 45.88333,
+   "longitude": 24.05,
+   "elevation": 435.0
+  },
+  {
+   "name": "Ocnele Mari",
+   "county": "Vâlcea",
+   "population": 3134,
+   "county_seat": false,
+   "latitude": 45.08333,
+   "longitude": 24.31667,
+   "elevation": 302.0
+  },
+  {
+   "name": "Odobești",
+   "county": "Vrancea",
+   "population": 9423,
+   "county_seat": false,
+   "latitude": 45.76667,
+   "longitude": 27.05,
+   "elevation": 223.0
+  },
+  {
+   "name": "Odorheiu Secuiesc",
+   "county": "Harghita",
+   "population": 31335,
+   "county_seat": false,
+   "latitude": 46.3,
+   "longitude": 25.3,
+   "elevation": 495.0
+  },
+  {
+   "name": "Oltenița",
+   "county": "Călărași",
+   "population": 22624,
+   "county_seat": false,
+   "latitude": 44.08333,
+   "longitude": 26.63333,
+   "elevation": 14.0
+  },
+  {
+   "name": "Onești",
+   "county": "Bacău",
+   "population": 34005,
+   "county_seat": false,
+   "latitude": 46.25,
+   "longitude": 26.75,
+   "elevation": 206.0
+  },
+  {
+   "name": "Oradea",
+   "county": "Bihor",
+   "population": 183105,
+   "county_seat": true,
+   "latitude": 47.0458,
+   "longitude": 21.91833,
+   "elevation": 126.0
+  },
+  {
+   "name": "Orăștie",
+   "county": "Hunedoara",
+   "population": 16825,
+   "county_seat": false,
+   "latitude": 45.83333,
+   "longitude": 23.2,
+   "elevation": 224.0
+  },
+  {
+   "name": "Oravița",
+   "county": "Caraș-Severin",
+   "population": 9346,
+   "county_seat": false,
+   "latitude": 45.0325,
+   "longitude": 21.68944,
+   "elevation": 213.0
+  },
+  {
+   "name": "Orșova",
+   "county": "Mehedinți",
+   "population": 8506,
+   "county_seat": false,
+   "latitude": 44.72299,
+   "longitude": 22.39619,
+   "elevation": 79.0
+  },
+  {
+   "name": "Oțelu Roșu",
+   "county": "Caraș-Severin",
+   "population": 8497,
+   "county_seat": false,
+   "latitude": 45.53333,
+   "longitude": 22.36667,
+   "elevation": 327.0
+  },
+  {
+   "name": "Otopeni",
+   "county": "Ilfov",
+   "population": 21750,
+   "county_seat": false,
+   "latitude": 44.55,
+   "longitude": 26.06667,
+   "elevation": 94.0
+  },
+  {
+   "name": "Ovidiu",
+   "county": "Constanța",
+   "population": 13968,
+   "county_seat": false,
+   "latitude": 44.258,
+   "longitude": 28.56083,
+   "elevation": 22.0
+  },
+  {
+   "name": "Panciu",
+   "county": "Vrancea",
+   "population": 6921,
+   "county_seat": false,
+   "latitude": 45.9,
+   "longitude": 27.08333,
+   "elevation": 201.0
+  },
+  {
+   "name": "Pâncota",
+   "county": "Arad",
+   "population": 6787,
+   "county_seat": false,
+   "latitude": 46.33333,
+   "longitude": 21.7,
+   "elevation": 105.0
+  },
+  {
+   "name": "Pantelimon",
+   "county": "Ilfov",
+   "population": 32873,
+   "county_seat": false,
+   "latitude": 44.45,
+   "longitude": 26.2,
+   "elevation": 72.0
+  },
+  {
+   "name": "Pașcani",
+   "county": "Iași",
+   "population": 30766,
+   "county_seat": false,
+   "latitude": 47.2469,
+   "longitude": 26.72291,
+   "elevation": 230.0
+  },
+  {
+   "name": "Pătârlagele",
+   "county": "Buzău",
+   "population": 6276,
+   "county_seat": false,
+   "latitude": 45.32081,
+   "longitude": 26.36134,
+   "elevation": 284.0
+  },
+  {
+   "name": "Pecica",
+   "county": "Arad",
+   "population": 11950,
+   "county_seat": false,
+   "latitude": 46.16667,
+   "longitude": 21.06667,
+   "elevation": 100.0
+  },
+  {
+   "name": "Petrila",
+   "county": "Hunedoara",
+   "population": 19600,
+   "county_seat": false,
+   "latitude": 45.45,
+   "longitude": 23.41667,
+   "elevation": 676.0
+  },
+  {
+   "name": "Petroșani",
+   "county": "Hunedoara",
+   "population": 31044,
+   "county_seat": false,
+   "latitude": 45.41667,
+   "longitude": 23.36667,
+   "elevation": 606.0
+  },
+  {
+   "name": "Piatra Neamț",
+   "county": "Neamț",
+   "population": 79679,
+   "county_seat": true,
+   "latitude": 46.91667,
+   "longitude": 26.33333,
+   "elevation": 508.0
+  },
+  {
+   "name": "Piatra-Olt",
+   "county": "Olt",
+   "population": 6000,
+   "county_seat": false,
+   "latitude": 44.36667,
+   "longitude": 24.26667,
+   "elevation": 132.0
+  },
+  {
+   "name": "Pitești",
+   "county": "Argeș",
+   "population": 141275,
+   "county_seat": true,
+   "latitude": 44.85,
+   "longitude": 24.86667,
+   "elevation": 307.0
+  },
+  {
+   "name": "Ploiești",
+   "county": "Prahova",
+   "population": 180540,
+   "county_seat": true,
+   "latitude": 44.95,
+   "longitude": 26.01667,
+   "elevation": 161.0
+  },
+  {
+   "name": "Plopeni",
+   "county": "Prahova",
+   "population": 6709,
+   "county_seat": false,
+   "latitude": 45.04955,
+   "longitude": 25.95202,
+   "elevation": 254.0
+  },
+  {
+   "name": "Podu Iloaiei",
+   "county": "Iași",
+   "population": 8992,
+   "county_seat": false,
+   "latitude": 47.21667,
+   "longitude": 27.26667,
+   "elevation": 84.0
+  },
+  {
+   "name": "Pogoanele",
+   "county": "Buzău",
+   "population": 6384,
+   "county_seat": false,
+   "latitude": 44.91667,
+   "longitude": 27.0,
+   "elevation": 62.0
+  },
+  {
+   "name": "Popești-Leordeni",
+   "county": "Ilfov",
+   "population": 53431,
+   "county_seat": false,
+   "latitude": 44.38333,
+   "longitude": 26.16667,
+   "elevation": 76.0
+  },
+  {
+   "name": "Potcoava",
+   "county": "Olt",
+   "population": 5229,
+   "county_seat": false,
+   "latitude": 44.48333,
+   "longitude": 24.65,
+   "elevation": 185.0
+  },
+  {
+   "name": "Predeal",
+   "county": "Brașov",
+   "population": 4020,
+   "county_seat": false,
+   "latitude": 45.5,
+   "longitude": 25.56667,
+   "elevation": 1110.0
+  },
+  {
+   "name": "Pucioasa",
+   "county": "Dâmbovița",
+   "population": 12953,
+   "county_seat": false,
+   "latitude": 45.07807,
+   "longitude": 25.43232,
+   "elevation": 407.0
+  },
+  {
+   "name": "Răcari",
+   "county": "Dâmbovița",
+   "population": 6306,
+   "county_seat": false,
+   "latitude": 44.63333,
+   "longitude": 25.73333,
+   "elevation": 133.0
+  },
+  {
+   "name": "Rădăuți",
+   "county": "Suceava",
+   "population": 24292,
+   "county_seat": false,
+   "latitude": 47.85,
+   "longitude": 25.91667,
+   "elevation": 368.0
+  },
+  {
+   "name": "Râmnicu Sărat",
+   "county": "Buzău",
+   "population": 29774,
+   "county_seat": false,
+   "latitude": 45.38333,
+   "longitude": 27.05,
+   "elevation": 130.0
+  },
+  {
+   "name": "Râmnicu Vâlcea",
+   "county": "Vâlcea",
+   "population": 110527,
+   "county_seat": true,
+   "latitude": 45.1,
+   "longitude": 24.36667,
+   "elevation": 237.0
+  },
+  {
+   "name": "Râșnov",
+   "county": "Brașov",
+   "population": 15920,
+   "county_seat": false,
+   "latitude": 45.58333,
+   "longitude": 25.45,
+   "elevation": 641.0
+  },
+  {
+   "name": "Recaș",
+   "county": "Timiș",
+   "population": 8347,
+   "county_seat": false,
+   "latitude": 45.79889,
+   "longitude": 21.50083,
+   "elevation": 104.0
+  },
+  {
+   "name": "Reghin",
+   "county": "Mureș",
+   "population": 29742,
+   "county_seat": false,
+   "latitude": 46.7742,
+   "longitude": 24.70216,
+   "elevation": 364.0
+  },
+  {
+   "name": "Reșița",
+   "county": "Caraș-Severin",
+   "population": 58393,
+   "county_seat": true,
+   "latitude": 45.30083,
+   "longitude": 21.88917,
+   "elevation": 301.0
+  },
+  {
+   "name": "Roman",
+   "county": "Neamț",
+   "population": 48644,
+   "county_seat": false,
+   "latitude": 46.92119,
+   "longitude": 26.92646,
+   "elevation": 202.0
+  },
+  {
+   "name": "Roșiorii de Vede",
+   "county": "Teleorman",
+   "population": 22294,
+   "county_seat": false,
+   "latitude": 44.11667,
+   "longitude": 24.98333,
+   "elevation": 85.0
+  },
+  {
+   "name": "Rovinari",
+   "county": "Gorj",
+   "population": 10246,
+   "county_seat": false,
+   "latitude": 44.91667,
+   "longitude": 23.18333,
+   "elevation": 166.0
+  },
+  {
+   "name": "Roznov",
+   "county": "Neamț",
+   "population": 8133,
+   "county_seat": false,
+   "latitude": 46.83333,
+   "longitude": 26.51667,
+   "elevation": 269.0
+  },
+  {
+   "name": "Rupea",
+   "county": "Brașov",
+   "population": 4907,
+   "county_seat": false,
+   "latitude": 46.03333,
+   "longitude": 25.21667,
+   "elevation": 458.0
+  },
+  {
+   "name": "Săcele",
+   "county": "Brașov",
+   "population": 30920,
+   "county_seat": false,
+   "latitude": 45.61674,
+   "longitude": 25.71101,
+   "elevation": 652.0
+  },
+  {
+   "name": "Săcueni",
+   "county": "Bihor",
+   "population": 10720,
+   "county_seat": false,
+   "latitude": 47.35,
+   "longitude": 22.1,
+   "elevation": 126.0
+  },
+  {
+   "name": "Salcea",
+   "county": "Suceava",
+   "population": 9513,
+   "county_seat": false,
+   "latitude": 47.65,
+   "longitude": 26.36667,
+   "elevation": 329.0
+  },
+  {
+   "name": "Săliște",
+   "county": "Sibiu",
+   "population": 5710,
+   "county_seat": false,
+   "latitude": 45.79633,
+   "longitude": 23.88677,
+   "elevation": 545.0
+  },
+  {
+   "name": "Săliștea de Sus",
+   "county": "Maramureș",
+   "population": 4856,
+   "county_seat": false,
+   "latitude": 47.65,
+   "longitude": 24.35,
+   "elevation": 498.0
+  },
+  {
+   "name": "Salonta",
+   "county": "Bihor",
+   "population": 15792,
+   "county_seat": false,
+   "latitude": 46.8,
+   "longitude": 21.65,
+   "elevation": 92.0
+  },
+  {
+   "name": "Sângeorgiu de Pădure",
+   "county": "Mureș",
+   "population": 4875,
+   "county_seat": false,
+   "latitude": 46.43061,
+   "longitude": 24.84274,
+   "elevation": 342.0
+  },
+  {
+   "name": "Sângeorz-Băi",
+   "county": "Bistrița-Năsăud",
+   "population": 10931,
+   "county_seat": false,
+   "latitude": 47.3685,
+   "longitude": 24.67212,
+   "elevation": 434.0
+  },
+  {
+   "name": "Sânnicolau Mare",
+   "county": "Timiș",
+   "population": 10627,
+   "county_seat": false,
+   "latitude": 46.08333,
+   "longitude": 20.63333,
+   "elevation": 80.0
+  },
+  {
+   "name": "Sântana",
+   "county": "Arad",
+   "population": 12460,
+   "county_seat": false,
+   "latitude": 46.35,
+   "longitude": 21.5,
+   "elevation": 109.0
+  },
+  {
+   "name": "Sărmașu",
+   "county": "Mureș",
+   "population": 6186,
+   "county_seat": false,
+   "latitude": 46.75,
+   "longitude": 24.16667,
+   "elevation": 340.0
+  },
+  {
+   "name": "Satu Mare",
+   "county": "Satu Mare",
+   "population": 91520,
+   "county_seat": true,
+   "latitude": 47.79926,
+   "longitude": 22.86255,
+   "elevation": 124.0
+  },
+  {
+   "name": "Săveni",
+   "county": "Botoșani",
+   "population": 6447,
+   "county_seat": false,
+   "latitude": 47.95,
+   "longitude": 26.86667,
+   "elevation": 83.0
+  },
+  {
+   "name": "Scornicești",
+   "county": "Olt",
+   "population": 10795,
+   "county_seat": false,
+   "latitude": 44.56667,
+   "longitude": 24.55,
+   "elevation": 204.0
+  },
+  {
+   "name": "Sebeș",
+   "county": "Alba",
+   "population": 26490,
+   "county_seat": false,
+   "latitude": 45.95646,
+   "longitude": 23.571,
+   "elevation": 254.0
+  },
+  {
+   "name": "Sebiș",
+   "county": "Arad",
+   "population": 6168,
+   "county_seat": false,
+   "latitude": 46.36667,
+   "longitude": 22.11667,
+   "elevation": 132.0
+  },
+  {
+   "name": "Segarcea",
+   "county": "Dolj",
+   "population": 7356,
+   "county_seat": false,
+   "latitude": 44.1,
+   "longitude": 23.75,
+   "elevation": 146.0
+  },
+  {
+   "name": "Seini",
+   "county": "Maramureș",
+   "population": 8198,
+   "county_seat": false,
+   "latitude": 47.75,
+   "longitude": 23.28333,
+   "elevation": 140.0
+  },
+  {
+   "name": "Sfântu Gheorghe",
+   "county": "Covasna",
+   "population": 50080,
+   "county_seat": true,
+   "latitude": 45.86667,
+   "longitude": 25.78333,
+   "elevation": 552.0
+  },
+  {
+   "name": "Sibiu",
+   "county": "Sibiu",
+   "population": 134309,
+   "county_seat": true,
+   "latitude": 45.8,
+   "longitude": 24.15,
+   "elevation": 410.0
+  },
+  {
+   "name": "Sighetu Marmației",
+   "county": "Maramureș",
+   "population": 32795,
+   "county_seat": false,
+   "latitude": 47.93195,
+   "longitude": 23.88603,
+   "elevation": 270.0
+  },
+  {
+   "name": "Sighișoara",
+   "county": "Mureș",
+   "population": 23927,
+   "county_seat": false,
+   "latitude": 46.22141,
+   "longitude": 24.79279,
+   "elevation": 350.0
+  },
+  {
+   "name": "Simeria",
+   "county": "Hunedoara",
+   "population": 11268,
+   "county_seat": false,
+   "latitude": 45.85,
+   "longitude": 23.01667,
+   "elevation": 200.0
+  },
+  {
+   "name": "Șimleu Silvaniei",
+   "county": "Sălaj",
+   "population": 13948,
+   "county_seat": false,
+   "latitude": 47.23333,
+   "longitude": 22.8,
+   "elevation": 238.0
+  },
+  {
+   "name": "Sinaia",
+   "county": "Prahova",
+   "population": 9071,
+   "county_seat": false,
+   "latitude": 45.35,
+   "longitude": 25.55,
+   "elevation": 813.0
+  },
+  {
+   "name": "Siret",
+   "county": "Suceava",
+   "population": 6708,
+   "county_seat": false,
+   "latitude": 47.95,
+   "longitude": 26.06667,
+   "elevation": 319.0
+  },
+  {
+   "name": "Slănic",
+   "county": "Prahova",
+   "population": 4669,
+   "county_seat": false,
+   "latitude": 45.25,
+   "longitude": 25.93333,
+   "elevation": 515.0
+  },
+  {
+   "name": "Slănic Moldova",
+   "county": "Bacău",
+   "population": 4011,
+   "county_seat": false,
+   "latitude": 46.22308,
+   "longitude": 26.47413,
+   "elevation": 422.0
+  },
+  {
+   "name": "Slatina",
+   "county": "Olt",
+   "population": 63487,
+   "county_seat": true,
+   "latitude": 44.43333,
+   "longitude": 24.36667,
+   "elevation": 165.0
+  },
+  {
+   "name": "Slobozia",
+   "county": "Ialomița",
+   "population": 43553,
+   "county_seat": true,
+   "latitude": 44.5647,
+   "longitude": 27.3633,
+   "elevation": 24.0
+  },
+  {
+   "name": "Solca",
+   "county": "Suceava",
+   "population": 2405,
+   "county_seat": false,
+   "latitude": 47.7,
+   "longitude": 25.85,
+   "elevation": 472.0
+  },
+  {
+   "name": "Șomcuta Mare",
+   "county": "Maramureș",
+   "population": 7703,
+   "county_seat": false,
+   "latitude": 47.51667,
+   "longitude": 23.46667,
+   "elevation": 190.0
+  },
+  {
+   "name": "Sovata",
+   "county": "Mureș",
+   "population": 9703,
+   "county_seat": false,
+   "latitude": 46.58333,
+   "longitude": 25.06667,
+   "elevation": 454.0
+  },
+  {
+   "name": "Ștefănești",
+   "county": "Argeș",
+   "population": 15931,
+   "county_seat": false,
+   "latitude": 44.86506,
+   "longitude": 24.94961,
+   "elevation": 284.0
+  },
+  {
+   "name": "Ștefănești",
+   "county": "Botoșani",
+   "population": 5032,
+   "county_seat": false,
+   "latitude": 47.79169,
+   "longitude": 27.20053,
+   "elevation": 68.0
+  },
+  {
+   "name": "Ștei",
+   "county": "Bihor",
+   "population": 5398,
+   "county_seat": false,
+   "latitude": 46.53333,
+   "longitude": 22.45,
+   "elevation": 241.0
+  },
+  {
+   "name": "Strehaia",
+   "county": "Mehedinți",
+   "population": 9059,
+   "county_seat": false,
+   "latitude": 44.61667,
+   "longitude": 23.2,
+   "elevation": 136.0
+  },
+  {
+   "name": "Suceava",
+   "county": "Suceava",
+   "population": 84322,
+   "county_seat": true,
+   "latitude": 47.63333,
+   "longitude": 26.25,
+   "elevation": 360.0
+  },
+  {
+   "name": "Sulina",
+   "county": "Tulcea",
+   "population": 3118,
+   "county_seat": false,
+   "latitude": 45.15564,
+   "longitude": 29.65403,
+   "elevation": 3.0
+  },
+  {
+   "name": "Tălmaciu",
+   "county": "Sibiu",
+   "population": 6711,
+   "county_seat": false,
+   "latitude": 45.66714,
+   "longitude": 24.26464,
+   "elevation": 382.0
+  },
+  {
+   "name": "Țăndărei",
+   "county": "Ialomița",
+   "population": 12761,
+   "county_seat": false,
+   "latitude": 44.64128,
+   "longitude": 27.65635,
+   "elevation": 7.0
+  },
+  {
+   "name": "Târgoviște",
+   "county": "Dâmbovița",
+   "population": 66965,
+   "county_seat": true,
+   "latitude": 44.92543,
+   "longitude": 25.4567,
+   "elevation": 283.0
+  },
+  {
+   "name": "Târgu Bujor",
+   "county": "Galați",
+   "population": 5946,
+   "county_seat": false,
+   "latitude": 45.86667,
+   "longitude": 27.9,
+   "elevation": 137.0
+  },
+  {
+   "name": "Târgu Cărbunești",
+   "county": "Gorj",
+   "population": 7616,
+   "county_seat": false,
+   "latitude": 44.95,
+   "longitude": 23.51667,
+   "elevation": 195.0
+  },
+  {
+   "name": "Târgu Frumos",
+   "county": "Iași",
+   "population": 9597,
+   "county_seat": false,
+   "latitude": 47.2,
+   "longitude": 27.0,
+   "elevation": 104.0
+  },
+  {
+   "name": "Târgu Jiu",
+   "county": "Gorj",
+   "population": 73545,
+   "county_seat": true,
+   "latitude": 45.05,
+   "longitude": 23.28333,
+   "elevation": 212.0
+  },
+  {
+   "name": "Târgu Lăpuș",
+   "county": "Maramureș",
+   "population": 11163,
+   "county_seat": false,
+   "latitude": 47.45261,
+   "longitude": 23.86539,
+   "elevation": 333.0
+  },
+  {
+   "name": "Târgu Mureș",
+   "county": "Mureș",
+   "population": 116033,
+   "county_seat": true,
+   "latitude": 46.54245,
+   "longitude": 24.55747,
+   "elevation": 319.0
+  },
+  {
+   "name": "Târgu Neamț",
+   "county": "Neamț",
+   "population": 18015,
+   "county_seat": false,
+   "latitude": 47.2,
+   "longitude": 26.36667,
+   "elevation": 361.0
+  },
+  {
+   "name": "Târgu Ocna",
+   "county": "Bacău",
+   "population": 10410,
+   "county_seat": false,
+   "latitude": 46.27899,
+   "longitude": 26.61301,
+   "elevation": 261.0
+  },
+  {
+   "name": "Târgu Secuiesc",
+   "county": "Covasna",
+   "population": 16243,
+   "county_seat": false,
+   "latitude": 46.0,
+   "longitude": 26.13333,
+   "elevation": 571.0
+  },
+  {
+   "name": "Târnăveni",
+   "county": "Mureș",
+   "population": 20604,
+   "county_seat": false,
+   "latitude": 46.33191,
+   "longitude": 24.29662,
+   "elevation": 284.0
+  },
+  {
+   "name": "Tășnad",
+   "county": "Satu Mare",
+   "population": 8058,
+   "county_seat": false,
+   "latitude": 47.48333,
+   "longitude": 22.58333,
+   "elevation": 177.0
+  },
+  {
+   "name": "Tăuții-Măgherăuș",
+   "county": "Maramureș",
+   "population": 8463,
+   "county_seat": false,
+   "latitude": 47.65,
+   "longitude": 23.48333,
+   "elevation": 170.0
+  },
+  {
+   "name": "Techirghiol",
+   "county": "Constanța",
+   "population": 8061,
+   "county_seat": false,
+   "latitude": 44.05,
+   "longitude": 28.6,
+   "elevation": 18.0
+  },
+  {
+   "name": "Tecuci",
+   "county": "Galați",
+   "population": 32801,
+   "county_seat": false,
+   "latitude": 45.84973,
+   "longitude": 27.43441,
+   "elevation": 36.0
+  },
+  {
+   "name": "Teiuș",
+   "county": "Alba",
+   "population": 6308,
+   "county_seat": false,
+   "latitude": 46.2,
+   "longitude": 23.68333,
+   "elevation": 238.0
+  },
+  {
+   "name": "Țicleni",
+   "county": "Gorj",
+   "population": 3934,
+   "county_seat": false,
+   "latitude": 44.88333,
+   "longitude": 23.4,
+   "elevation": 179.0
+  },
+  {
+   "name": "Timișoara",
+   "county": "Timiș",
+   "population": 250849,
+   "county_seat": true,
+   "latitude": 45.75372,
+   "longitude": 21.22571,
+   "elevation": 96.0
+  },
+  {
+   "name": "Tismana",
+   "county": "Gorj",
+   "population": 6359,
+   "county_seat": false,
+   "latitude": 45.05,
+   "longitude": 22.96667,
+   "elevation": 212.0
+  },
+  {
+   "name": "Titu",
+   "county": "Dâmbovița",
+   "population": 9291,
+   "county_seat": false,
+   "latitude": 44.65,
+   "longitude": 25.53333,
+   "elevation": 155.0
+  },
+  {
+   "name": "Toplița",
+   "county": "Harghita",
+   "population": 12609,
+   "county_seat": false,
+   "latitude": 46.9243,
+   "longitude": 25.3519,
+   "elevation": 658.0
+  },
+  {
+   "name": "Topoloveni",
+   "county": "Argeș",
+   "population": 9373,
+   "county_seat": false,
+   "latitude": 44.81667,
+   "longitude": 25.08333,
+   "elevation": 243.0
+  },
+  {
+   "name": "Tulcea",
+   "county": "Tulcea",
+   "population": 65624,
+   "county_seat": true,
+   "latitude": 45.1787,
+   "longitude": 28.80501,
+   "elevation": 5.0
+  },
+  {
+   "name": "Turceni",
+   "county": "Gorj",
+   "population": 8458,
+   "county_seat": false,
+   "latitude": 44.68333,
+   "longitude": 23.36667,
+   "elevation": 127.0
+  },
+  {
+   "name": "Turda",
+   "county": "Cluj",
+   "population": 43319,
+   "county_seat": false,
+   "latitude": 46.56667,
+   "longitude": 23.78333,
+   "elevation": 324.0
+  },
+  {
+   "name": "Turnu Măgurele",
+   "county": "Teleorman",
+   "population": 19597,
+   "county_seat": false,
+   "latitude": 43.7469,
+   "longitude": 24.86846,
+   "elevation": 36.0
+  },
+  {
+   "name": "Ulmeni",
+   "county": "Maramureș",
+   "population": 7110,
+   "county_seat": false,
+   "latitude": 47.46667,
+   "longitude": 23.3,
+   "elevation": 168.0
+  },
+  {
+   "name": "Ungheni",
+   "county": "Mureș",
+   "population": 7007,
+   "county_seat": false,
+   "latitude": 46.48333,
+   "longitude": 24.46667,
+   "elevation": 297.0
+  },
+  {
+   "name": "Uricani",
+   "county": "Hunedoara",
+   "population": 6669,
+   "county_seat": false,
+   "latitude": 45.33731,
+   "longitude": 23.1524,
+   "elevation": 692.0
+  },
+  {
+   "name": "Urlați",
+   "county": "Prahova",
+   "population": 10131,
+   "county_seat": false,
+   "latitude": 44.98333,
+   "longitude": 26.23333,
+   "elevation": 125.0
+  },
+  {
+   "name": "Urziceni",
+   "county": "Ialomița",
+   "population": 13380,
+   "county_seat": false,
+   "latitude": 44.71667,
+   "longitude": 26.63333,
+   "elevation": 52.0
+  },
+  {
+   "name": "Valea lui Mihai",
+   "county": "Bihor",
+   "population": 8969,
+   "county_seat": false,
+   "latitude": 47.51667,
+   "longitude": 22.15,
+   "elevation": 128.0
+  },
+  {
+   "name": "Vălenii de Munte",
+   "county": "Prahova",
+   "population": 12044,
+   "county_seat": false,
+   "latitude": 45.18333,
+   "longitude": 26.03333,
+   "elevation": 353.0
+  },
+  {
+   "name": "Vânju Mare",
+   "county": "Mehedinți",
+   "population": 5078,
+   "county_seat": false,
+   "latitude": 44.42528,
+   "longitude": 22.86972,
+   "elevation": 101.0
+  },
+  {
+   "name": "Vașcău",
+   "county": "Bihor",
+   "population": 2025,
+   "county_seat": false,
+   "latitude": 46.46667,
+   "longitude": 22.46667,
+   "elevation": 448.0
+  },
+  {
+   "name": "Vaslui",
+   "county": "Vaslui",
+   "population": 63035,
+   "county_seat": true,
+   "latitude": 46.63333,
+   "longitude": 27.73333,
+   "elevation": 96.0
+  },
+  {
+   "name": "Vatra Dornei",
+   "county": "Suceava",
+   "population": 12578,
+   "county_seat": false,
+   "latitude": 47.35,
+   "longitude": 25.36667,
+   "elevation": 814.0
+  },
+  {
+   "name": "Vicovu de Sus",
+   "county": "Suceava",
+   "population": 15143,
+   "county_seat": false,
+   "latitude": 47.93333,
+   "longitude": 25.68333,
+   "elevation": 460.0
+  },
+  {
+   "name": "Victoria",
+   "county": "Brașov",
+   "population": 6446,
+   "county_seat": false,
+   "latitude": 45.72968,
+   "longitude": 24.7028,
+   "elevation": 551.0
+  },
+  {
+   "name": "Videle",
+   "county": "Teleorman",
+   "population": 10107,
+   "county_seat": false,
+   "latitude": 44.27806,
+   "longitude": 25.52444,
+   "elevation": 104.0
+  },
+  {
+   "name": "Vișeu de Sus",
+   "county": "Maramureș",
+   "population": 15349,
+   "county_seat": false,
+   "latitude": 47.7079,
+   "longitude": 24.42953,
+   "elevation": 479.0
+  },
+  {
+   "name": "Vlăhița",
+   "county": "Harghita",
+   "population": 6468,
+   "county_seat": false,
+   "latitude": 46.345,
+   "longitude": 25.527,
+   "elevation": 827.0
+  },
+  {
+   "name": "Voluntari",
+   "county": "Ilfov",
+   "population": 47366,
+   "county_seat": false,
+   "latitude": 44.49002,
+   "longitude": 26.17338,
+   "elevation": 82.0
+  },
+  {
+   "name": "Vulcan",
+   "county": "Hunedoara",
+   "population": 19772,
+   "county_seat": false,
+   "latitude": 45.38333,
+   "longitude": 23.26667,
+   "elevation": 757.0
+  },
+  {
+   "name": "Zalău",
+   "county": "Sălaj",
+   "population": 52132,
+   "county_seat": true,
+   "latitude": 47.2,
+   "longitude": 23.05,
+   "elevation": 261.0
+  },
+  {
+   "name": "Zărnești",
+   "county": "Brașov",
+   "population": 21624,
+   "county_seat": false,
+   "latitude": 45.56093,
+   "longitude": 25.31787,
+   "elevation": 716.0
+  },
+  {
+   "name": "Zimnicea",
+   "county": "Teleorman",
+   "population": 12589,
+   "county_seat": false,
+   "latitude": 43.65638,
+   "longitude": 25.36454,
+   "elevation": 35.0
+  },
+  {
+   "name": "Zlatna",
+   "county": "Alba",
+   "population": 6652,
+   "county_seat": false,
+   "latitude": 46.10633,
+   "longitude": 23.23162,
+   "elevation": 407.0
+  }
+ ]
+}

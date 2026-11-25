@@ -1,0 +1,7 @@
+-r requirements.txt
+pytest==9.2.0
+pypdf==7.1.1
+ruff==0.17.6
+pip-audit==2.10.1
+pillow==13.0.0  # scripts/build_brand_assets.py
+# Optional browser tests (tests/e2e, run with CK_E2E=1): pip install playwright && playwright install chromium

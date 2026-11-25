@@ -182,3 +182,73 @@ def test_a_saved_english_choice_is_kept(page):
     page.reload(wait_until="load")
     page.expect(page.locator("#loc-name")).not_to_have_text("—", timeout=15000)
     assert page.get_attribute("html", "lang") == "en"
+
+
+# ---------------------------------------------------------------- mobile layout (phones: 360 and 390 px wide)
+
+OVERLAPS_JS = """sel => {
+  const boxes = [...document.querySelectorAll(sel)].filter(t => t.textContent.trim())
+                  .map(t => t.getBoundingClientRect()).sort((a, b) => a.left - b.left);
+  return boxes.slice(1).filter((b, i) => b.left < boxes[i].right - 0.5).length;
+}"""
+
+
+@pytest.fixture(params=[(360, 740), (390, 844)], ids=["360px", "390px"])
+def phone(request, base_url):
+    sync_api = pytest.importorskip("playwright.sync_api")
+    width, height = request.param
+    with sync_api.sync_playwright() as p:
+        browser = p.chromium.launch()
+        ctx = browser.new_context(viewport={"width": width, "height": height}, is_mobile=True, has_touch=True)
+        pg = ctx.new_page()
+        pg.errors = []
+        pg.on("pageerror", lambda e: pg.errors.append(str(e)))
+        pg.goto(base_url, wait_until="load")
+        sync_api.expect(pg.locator("#loc-name")).not_to_have_text("—", timeout=15000)
+        pg.wait_for_timeout(2500)  # reveal + chart animations
+        pg.expect = sync_api.expect
+        yield pg
+        browser.close()
+
+
+def test_phone_page_never_scrolls_sideways(phone):
+    assert phone.evaluate("document.documentElement.scrollWidth") == phone.viewport_size["width"]
+    assert phone.errors == []
+
+
+def test_phone_chart_axis_labels_do_not_overlap(phone):
+    """Was: '15:0018:0021:00…' under the hourly chart and 'Sâm.Dum.' under the 7-day chart."""
+    assert phone.evaluate(OVERLAPS_JS, "#chart-precip .apexcharts-xaxis-texts-g text tspan") == 0
+    assert phone.evaluate(OVERLAPS_JS, "#chart-range .apexcharts-xaxis-texts-g text tspan") == 0
+
+
+def test_phone_day_cards_are_one_swipeable_row(phone):
+    cards = phone.locator(".day-card")
+    tops = {round(cards.nth(i).bounding_box()["y"]) for i in range(cards.count())}
+    assert len(tops) == 1, "all 7 days in one row"
+    row = phone.locator("#daily-cards")
+    assert row.evaluate("el => el.scrollWidth > el.clientWidth && getComputedStyle(el).overflowX === 'auto'")
+    cards.nth(6).scroll_into_view_if_needed()  # the last day is reachable by swiping
+    last = cards.nth(6).bounding_box()
+    assert last["x"] + last["width"] <= phone.viewport_size["width"]
+
+
+def test_phone_current_conditions_are_compact(phone):
+    scene = phone.locator("#weather-scene").bounding_box()
+    text = phone.locator("#loc-name").locator("xpath=..").bounding_box()  # the column with name, region, temperature
+    assert scene["x"] + scene["width"] <= text["x"], "illustration is to the left of the text, not above it"
+    assert scene["y"] < text["y"] + text["height"] and text["y"] < scene["y"] + scene["height"], "same row"
+    metric_tops = {round(m.bounding_box()["y"]) for m in phone.locator(".metric").all()}
+    assert len(metric_tops) == 1, "feels like / humidity / wind side by side"
+
+
+def test_phone_search_placeholder_is_short(phone):
+    assert phone.get_attribute("#city-input", "placeholder") == "Caută un oraș…"
+
+
+def test_phone_footer_link_is_a_comfortable_tap_target(phone):
+    assert phone.locator("footer a").bounding_box()["height"] >= 24
+
+
+def test_desktop_keeps_the_long_placeholder(page):
+    assert page.get_attribute("#city-input", "placeholder") == "Caută printre cele 319 orașe din România…"

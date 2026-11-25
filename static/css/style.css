@@ -95,20 +95,27 @@
 .preset-chip.is-active { background: var(--ck-amber); border-color: var(--ck-amber); color: #070d1a; font-weight: 600; }
 
 /* Metrics row */
-.metric { padding: 1.1rem 1.5rem; }
-.metric + .metric { border-top: 1px solid var(--ck-border); }
-@media (min-width: 640px) {
-  .metric + .metric { border-top: 0; border-left: 1px solid var(--ck-border); }
-}
+/* Always three columns (feels like / humidity / wind); tighter on phones so they fit side by side. */
+.metric { padding: 1.1rem 1.5rem; min-width: 0; }
+.metric + .metric { border-left: 1px solid var(--ck-border); }
 .metric-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; }
 .metric-value { margin-top: 0.25rem; font-size: 1.75rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .metric-unit { margin-left: 0.25rem; font-size: 0.95rem; font-weight: 500; color: #94a3b8; }
+@media (max-width: 639px) {
+  .metric { padding: 0.85rem 0.75rem; }
+  .metric-label { font-size: 0.65rem; letter-spacing: 0.04em; line-height: 1.3; overflow-wrap: anywhere; }
+  .metric-value { font-size: 1.35rem; }
+  .metric-unit { font-size: 0.8rem; }
+}
 
 /* PDF link */
 .pdf-btn[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
 
 /* Weather scene */
 .weather-scene { width: 160px; height: 128px; flex-shrink: 0; }
+@media (max-width: 639px) {
+  .weather-scene { width: 96px; height: 77px; } /* sits beside the city name on phones */
+}
 .weather-scene svg, .mini-icon svg { width: 100%; height: 100%; overflow: visible; }
 
 /* Daily cards */
@@ -139,6 +146,22 @@
   box-shadow: 0 0 0 1px var(--ck-amber) inset;
 }
 #chart-range .apexcharts-rangebar-area { cursor: pointer; }
+
+/* Phones: the 7 days are one swipeable row that bleeds to the card edges (the card has 1.5rem padding). */
+@media (max-width: 639px) {
+  #daily-cards {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.5rem;
+    margin-inline: -1.5rem;
+    padding: 0.25rem 1.5rem 0.5rem; /* top room for the hover lift, bottom room for the scroll */
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  #daily-cards::-webkit-scrollbar { display: none; }
+  #daily-cards .day-card { flex: 0 0 5.75rem; scroll-snap-align: start; }
+}
 
 /* Hourly section: leave room for the sticky header when a day selection scrolls it into view. */
 #hourly-section { scroll-margin-top: 5.5rem; }

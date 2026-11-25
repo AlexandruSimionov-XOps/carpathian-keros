@@ -39,16 +39,16 @@ See [AGENTS.md](../AGENTS.md), Article III, for the test-first workflow, and [ai
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` runs on every pull request into `development` or `main`, and on pushes to them. Six jobs run in parallel, and all must be green. Each can be reproduced locally with the same tool version:
+The **Build, Test & Scan** workflow (`.github/workflows/ci.yml`) runs on every pull request into `development` or `main`, and on pushes to them. Six jobs run in parallel, and all must be green. Each can be reproduced locally with the same tool version:
 
 | CI job | What it checks | Run it locally |
 |---|---|---|
-| **Lint (ruff)** | Code style and common bugs | `ruff check . && ruff format --check .` |
-| **Tests (pytest + Node)** | Unit, API, PDF and JS tests, offline | `pytest` (needs `fonts-dejavu-core` for the PDF tests) |
-| **Dependency audit** | Known vulnerabilities in Python packages | `pip-audit -r requirements.txt -r requirements-e2e.txt` |
-| **Secret scan** | Secrets anywhere in the git history | `docker run --rm -v "$PWD:/repo:ro" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact` |
-| **Docker image** | Dockerfile lint → build → container tests → vulnerability scan | `docker run --rm -i -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" hadolint/hadolint:v2.15.1 < Dockerfile`<br>`docker build -t carpathian-keros:ci . && CK_DOCKER=1 CK_IMAGE=carpathian-keros:ci pytest -m docker`<br>`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.76.2 image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed carpathian-keros:ci` |
-| **Browser tests** | Desktop and phone layouts, interactions, no console or CSP errors | `pip install -r requirements-e2e.txt && playwright install chromium && CK_E2E=1 pytest -m e2e` |
+| **Lint** | Code style, common bugs, formatting (ruff) | `ruff check . && ruff format --check .` |
+| **Unit & API Tests** | Unit, API, PDF and JS tests, offline (pytest + Node) | `pytest` (needs `fonts-dejavu-core` for the PDF tests) |
+| **Dependency Audit** | Known vulnerabilities in Python packages (pip-audit) | `pip-audit -r requirements.txt -r requirements-e2e.txt` |
+| **Secret Scan** | Secrets anywhere in the git history (gitleaks) | `docker run --rm -v "$PWD:/repo:ro" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact` |
+| **Container Build & Scan** | Dockerfile lint (hadolint) → build → container tests → vulnerability scan (Trivy) | `docker run --rm -i -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" hadolint/hadolint:v2.15.1 < Dockerfile`<br>`docker build -t carpathian-keros:ci . && CK_DOCKER=1 CK_IMAGE=carpathian-keros:ci pytest -m docker`<br>`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.76.2 image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed carpathian-keros:ci` |
+| **Browser Tests** | Desktop and phone layouts, interactions, no console or CSP errors (Playwright) | `pip install -r requirements-e2e.txt && playwright install chromium && CK_E2E=1 pytest -m e2e` |
 
 (The workflow pins each tool image by digest; the tags above are the same versions.)
 

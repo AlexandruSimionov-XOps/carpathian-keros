@@ -160,7 +160,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
 5. **Done means:**
    - `pytest` passes, and `ruff check .` / `ruff format --check .` are clean
    - the checklist in `docs/ai-agents.md` passes
-   - on GitHub: every CI job on the PR is green (`.github/workflows/ci.yml`: lint, test, audit, secrets, docker, e2e)
+   - on GitHub: every job of the **Build, Test & Scan** workflow (`.github/workflows/ci.yml`) is green on the PR
    - for UI changes, you've looked at the result in a browser
    - the docs reflect the change
 
@@ -368,10 +368,10 @@ hotfix/… (from main) ──PR──▶ main ──▶ tag ──▶ merge main
 
 The constitution describes the target state. These items aren't in place yet. Don't pretend they are, and set them up when a task touches them (or when the user asks):
 
-- **CI checks aren't required yet.** `.github/workflows/ci.yml` runs on every PR into `development` and `main`, but GitHub only blocks a merge once the checks are marked required. Still to do in the rulesets for **both** branches: PR required, no force-push, no deletion, and these status checks required: `Lint (ruff)`, `Tests (pytest + Node)`, `Dependency audit (pip-audit)`, `Secret scan (gitleaks)`, `Docker image (hadolint, build, container tests, Trivy)`, `Browser tests (Playwright, desktop + phones)`. Don't restrict the repo to squash-merge only: release PRs (`development` → `main`) need merge commits.
+- **CI checks aren't required yet.** `.github/workflows/ci.yml` runs on every PR into `development` and `main`, but GitHub only blocks a merge once the checks are marked required. Still to do in the rulesets for **both** branches: PR required, no force-push, no deletion, and these status checks required: `Lint`, `Unit & API Tests`, `Dependency Audit`, `Secret Scan`, `Container Build & Scan`, `Browser Tests`. Workflow, job and step names stay short, readable and parenthesis-free; tool details go in YAML comments (`test_names_are_short_and_readable`). Don't restrict the repo to squash-merge only: release PRs (`development` → `main`) need merge commits.
 - **Tailwind Play CDN.** It can't carry an SRI hash (its content isn't pinned by hash), and it injects `<style>`, so the CSP needs `style-src 'unsafe-inline'`. Fix: compile Tailwind with its CLI into `static/css/` and drop the CDN. ApexCharts also sets inline styles, so check whether `'unsafe-inline'` can actually be removed afterwards.
 - **No HSTS header.** It belongs where TLS terminates (`Strict-Transport-Security`), not in the app, which also runs over plain HTTP locally. On Cloud Run, Google's front end terminates TLS but doesn't add HSTS. Add it when deploying, only for requests that arrived over HTTPS (`X-Forwarded-Proto: https`).
-- **Not deployed yet.** The image is built, tested and scanned in CI; deployment to Google Cloud Run (CD, with Workload Identity Federation instead of stored keys) is next.
+- **Not deployed yet.** The image is built, tested and scanned in CI; deployment to Google Cloud Run (CD, with Workload Identity Federation instead of stored keys) is next. The CD PR must also add its status badge to the README, next to the CI badge, in the same style: `[![<Workflow name>](…/actions/workflows/<file>.yml/badge.svg?branch=main)](…/actions/workflows/<file>.yml)`, tracking `main`, because deploys come from releases.
 
 ## Working agreements
 

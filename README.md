@@ -4,7 +4,10 @@
 
 # Carpathian Keros
 
-[![CI](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml/badge.svg?branch=development)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml)
+[![Build, Test & Scan](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml/badge.svg?branch=development)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/AlexandruSimionov-XOps/carpathian-keros?sort=semver)](https://github.com/AlexandruSimionov-XOps/carpathian-keros/releases)
+[![License: MIT](https://img.shields.io/github/license/AlexandruSimionov-XOps/carpathian-keros)](LICENSE)
+[![Python 3.14](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white)](pyproject.toml)
 
 A bilingual (Romanian / English) weather dashboard for Romania's 319 official cities and towns (the [Wikipedia list](https://ro.wikipedia.org/wiki/Lista_ora%C8%99elor_din_Rom%C3%A2nia)). Search suggests matching cities as you type. It shows current conditions, a 24-hour hourly chart and a 7-day forecast, and you can download any report as a PDF in either language.
 

@@ -61,6 +61,17 @@ def test_every_job_has_a_timeout(path):
     assert {name for name, job in jobs.items() if "timeout-minutes" not in job} == set()
 
 
+@pytest.mark.parametrize("path", WORKFLOWS, ids=lambda p: p.name)
+def test_names_are_short_and_readable(path):
+    """Names show up in the Actions tab, PR checks and required-check lists: every step is named,
+    and workflow/job/step names stay short, with no parentheses (details go in YAML comments)."""
+    workflow = load(path)
+    names = [workflow["name"]] + [job["name"] for job in workflow["jobs"].values()]
+    names += [step.get("name", "") for _, step in steps(workflow)]
+    assert all(names), "every workflow, job and step needs a name"
+    assert [n for n in names if "(" in n or ")" in n or len(n) > 40] == []
+
+
 def test_ci_runs_on_pull_requests_and_pushes_to_both_long_lived_branches(ci):
     on = ci["on"]
     assert set(on["pull_request"]["branches"]) == {"development", "main"}

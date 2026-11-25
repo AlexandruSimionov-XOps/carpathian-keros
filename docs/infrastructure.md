@@ -22,7 +22,7 @@ GitHub Actions (deploy.yml, on a v* tag)
 | `infra/registry.tf` | Docker repository `carpathian-keros` | Immutable tags; keeps the 5 newest images and deletes older ones after 7 days (stays inside the 0.5 GB free storage); paid image scanning off (Trivy scans in CI) |
 | `infra/iam.tf` | Service accounts `ck-runtime` (no roles) and `ck-deployer` | Every grant is **resource-scoped**: push to this repository, deploy this service, act as `ck-runtime`. No project-wide roles, no keys |
 | `infra/wif.tf` | Workload Identity pool `github` + provider | Trusts **only** repository ID 1471744541 (owner 356566022), **only** the `deploy.yml` workflow, **only** on `main` or `v*` tags |
-| `infra/run.tf` | Cloud Run service `carpathian-keros` + public invoker | Scale to zero, max 2 instances, 1 vCPU / 512 MiB, CPU only during requests, `/healthz` startup and liveness probes, deletion protection |
+| `infra/run.tf` | Cloud Run service `carpathian-keros` + public invoker | Scale to zero, max 2 instances, 1 vCPU / 512 MiB, CPU only during requests, `/health` startup and liveness probes, deletion protection |
 | `infra/budget.tf` | €1 monthly budget on this project | Emails billing admins at 50%, 90%, 100% and forecast 100%. Alerts only, never stops anything |
 
 **OpenTofu owns the configuration; the deploy workflow owns the image version.** The service has `ignore_changes` on the container image, so a later `tofu apply` never rolls production back to the placeholder image (policy-tested).
@@ -104,7 +104,7 @@ Cloud Run's **custom URLs** give the service a clean address, `https://carpathia
 gcloud beta run domain-mappings create \
   --service=carpathian-keros --domain=carpathian-keros.cloud.run --region=europe-west1
 gcloud beta run domain-mappings describe --domain=carpathian-keros.cloud.run --region=europe-west1
-curl -sI https://carpathian-keros.cloud.run/healthz      # expect HTTP/2 200 after a few seconds
+curl -sI https://carpathian-keros.cloud.run/health      # expect HTTP/2 200 after a few seconds
 ```
 
 Things to know, from [Google's documentation](https://docs.cloud.google.com/run/docs/custom-urls):
@@ -159,7 +159,8 @@ docker run --rm -v "$PWD:/src:ro" aquasec/trivy:0.76.2 config --skip-dirs .terra
 | `billingbudgets…: … requires a quota project` / 403 on the budget | Run `gcloud auth application-default set-quota-project carpathian-keros` (step 1) |
 | Budget: `currency code … does not match` | Set `budget_currency` in `terraform.tfvars` to your billing account's currency (e.g. `RON`, `USD`) |
 | `Error 409: … already exists` for `github` pool | A pool with that ID was deleted less than 30 days ago; wait or change the ID in `wif.tf` |
-| First revision fails its startup probe | The placeholder image didn't answer `/healthz`. Set `initial_image` to a pushed Carpathian Keros image and apply again |
+| First revision fails its startup probe | The placeholder image didn't answer `/health`. Set `initial_image` to a pushed Carpathian Keros image and apply again |
+| A path works locally but returns Google's 404 on Cloud Run | It ends in `z` (e.g. `/healthz`): Cloud Run reserves such paths. Rename the route; that's why the health check is `/health` |
 | `.cloud.run` mapping: name not available | Choose another name (6–63 characters). It's first come, first served |
 | `infra/` plan: `Cloud Resource Manager API has not been used in project … (SERVICE_DISABLED)` | The bootstrap enables that API; apply (or re-apply) `infra/bootstrap` first, wait about a minute, then plan `infra/` again |
 | `gcloud billing … describe` shows `billingEnabled: false` | No billing account linked. Create one (console → Billing) and `gcloud billing projects link <project> --billing-account=<ID>`. Cloud Run needs billing even within the free tier |

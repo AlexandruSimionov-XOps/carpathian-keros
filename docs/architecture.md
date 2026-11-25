@@ -4,7 +4,7 @@
 
 ```
 carpathian-keros/
-├── app.py                       create_app() factory: routes, presets, error → HTTP, security headers, /healthz
+├── app.py                       create_app() factory: routes, presets, error → HTTP, security headers, /health
 ├── gunicorn.conf.py             Production server settings (PORT, workers, timeouts) used by the image
 ├── Dockerfile                   Two-stage production image (gunicorn, non-root, PDF fonts) for Docker / Cloud Run
 ├── .dockerignore                Allow-list: what may enter the image

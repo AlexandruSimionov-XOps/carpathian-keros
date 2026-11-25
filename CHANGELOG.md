@@ -12,7 +12,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - Artifact Registry with image cleanup
   - runtime and deployer service accounts with resource-scoped roles only
   - **Workload Identity Federation**: no service-account keys. It trusts only this repository's `deploy.yml`, on `main`/`v*` tags, by numeric repository and owner ID.
-  - the Cloud Run service (scale to zero, max 2 instances, `/healthz` probes)
+  - the Cloud Run service (scale to zero, max 2 instances, `/health` probes)
   - a €1 monthly budget alert
   - **Tests:** `tofu test` with a mocked Google provider, plus static policy checks
   - **CI:** a new **Infrastructure** job (fmt, validate, test, tflint, Trivy config)
@@ -27,7 +27,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - non-root user (uid 10001); `fonts-dejavu-core` so PDFs keep their diacritics
   - an allow-list build context, so tests, docs, `.git` and `.env` never reach the image
   - honours `PORT` (default 8080), `WEB_CONCURRENCY` and `GUNICORN_THREADS`
-- **`GET /healthz`** → `{"status": "ok", "version": "…"}`, for Cloud Run, CI smoke tests and the Docker `HEALTHCHECK`. It never calls Open-Meteo. This is an additive API change, so the next release is a MINOR one.
+- **`GET /health`** → `{"status": "ok", "version": "…"}`, for Cloud Run, CI smoke tests and the Docker `HEALTHCHECK`. It never calls Open-Meteo. This is an additive API change, so the next release is a MINOR one. It's deliberately **not** `/healthz`: Cloud Run's front end reserves paths ending in `z`, and public requests to `/healthz` returned Google's 404 (found on the live service before release; no route may end in `z` now).
 - **Container tests** (`CK_DOCKER=1 pytest -m docker`): build and run the image, then check health, the API, PDF fonts, the non-root user, clean startup logs, image contents and size, no pip, and graceful shutdown.
 - gunicorn added to `requirements.txt`.
 

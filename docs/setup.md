@@ -119,7 +119,7 @@ The production image (`Dockerfile`) runs the app under **gunicorn** as an unpriv
 ```bash
 docker build -t carpathian-keros --build-arg VERSION=1.0.0 .
 docker run --rm -p 8080:8080 carpathian-keros        # → http://localhost:8080
-curl http://localhost:8080/healthz                    # {"status":"ok","version":"1.0.0"}
+curl http://localhost:8080/health                    # {"status":"ok","version":"1.0.0"}
 ```
 
 On WSL2, `http://localhost:8080` also works from the Windows browser. Stop the container with **Ctrl+C**.
@@ -136,7 +136,7 @@ On WSL2, `http://localhost:8080` also works from the Windows browser. Stop the c
 - **Contents:** `.dockerignore` is an **allow-list** (`app.py`, `gunicorn.conf.py`, `pyproject.toml`, `requirements.txt`, `services/`, `templates/`, `static/`, `data/`). Tests, docs, `.git`, `.env` files and the brand originals never enter the build.
 - **User:** uid 10001, with no home and no shell. The app files are owned by root, so the process can't change its own code.
 - **Process:** gunicorn is PID 1 (exec form), so `docker stop` and Cloud Run's SIGTERM shut it down cleanly in about a second. Settings and their reasons are in `gunicorn.conf.py`.
-- **Health:** a `HEALTHCHECK` calls `GET /healthz`, which never contacts Open-Meteo, so an upstream outage can't make a healthy container look broken.
+- **Health:** a `HEALTHCHECK` calls `GET /health`, which never contacts Open-Meteo, so an upstream outage can't make a healthy container look broken.
 
 **Container tests** build the image, run it, and check the health endpoint, the API, PDF diacritics, the non-root user, clean logs, image contents and size, and SIGTERM shutdown:
 ```bash

@@ -131,7 +131,7 @@ curl -OJ "http://127.0.0.1:5000/api/report/export?city=Brașov&lang=ro"
 
 It uses the same cache as `/api/weather`, so exporting right after viewing a city doesn't call Open-Meteo again.
 
-## `GET /healthz`
+## `GET /health`
 
 A liveness check for Cloud Run, CI smoke tests and the Docker `HEALTHCHECK`.
 
@@ -140,6 +140,7 @@ A liveness check for Cloud Run, CI smoke tests and the Docker `HEALTHCHECK`.
 ```
 
 - `version` comes from `pyproject.toml` (it's `"unknown"` if that file is missing).
+- **Why not `/healthz`:** Cloud Run's front end reserves "some paths ending with z" ([known issues](https://cloud.google.com/run/docs/issues)). Public requests to `/healthz` got Google's own 404 and never reached the app, while the internal probes still worked. So no route in this app ends in `z` (`test_no_route_ends_in_z`).
 - **It never calls Open-Meteo.** An upstream outage must not make the platform restart a healthy container; upstream problems show up as `502 upstream_error` on the data endpoints instead.
 - `Cache-Control: no-store`.
 

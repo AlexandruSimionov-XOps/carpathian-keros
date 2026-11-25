@@ -1,0 +1,8 @@
+# hadolint configuration (Dockerfile linter, run in CI). Every ignored rule needs a reason here.
+failure-threshold: info
+
+ignored:
+  # DL3008 "pin versions in apt-get install": Debian drops old package versions from its mirrors when a fix lands,
+  # so `fonts-dejavu-core=<version>` would make builds fail at random. Reproducibility comes from the base image
+  # pinned by digest (Dependabot bumps it), and the font package keeps getting Debian security updates.
+  - DL3008

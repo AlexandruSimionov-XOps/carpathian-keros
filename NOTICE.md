@@ -37,6 +37,10 @@ The Carpathian Keros logos (`assets/brand/`) and the images generated from them 
 | pytest, ruff *(dev)* | MIT |
 | pypdf *(dev)* | BSD-3-Clause |
 | pip-audit *(dev)* | Apache-2.0 |
+| PyYAML *(dev)* | MIT |
+| Playwright *(e2e tests)* | Apache-2.0 |
+
+CI also runs hadolint (GPL-3.0), gitleaks (MIT) and Trivy (Apache-2.0) as containers. They check the code but aren't part of it or of the image.
 
 ## In the Docker image
 

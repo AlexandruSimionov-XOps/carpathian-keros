@@ -1,0 +1,38 @@
+# Weekly dependency updates, as PRs into `development` (AGENTS.md, Article VI). CI runs on each PR: the image is
+# rebuilt, re-tested and re-scanned before anything merges. Minor and patch bumps are grouped to keep the noise low.
+version: 2
+updates:
+  - package-ecosystem: pip # requirements.txt, requirements-dev.txt, requirements-e2e.txt
+    directory: "/"
+    target-branch: development
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      python-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions # SHA-pinned actions in .github/workflows (keeps the version comments current)
+    directory: "/"
+    target-branch: development
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker # the digest-pinned python:3.14-slim base image in the Dockerfile
+    directory: "/"
+    target-branch: development
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: build
+      include: scope

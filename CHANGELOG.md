@@ -7,6 +7,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ## [Unreleased]
 
 ### Added
+- **CI** (`.github/workflows/ci.yml`) on every PR into `development` or `main`: ruff, pytest (+ Node), pip-audit, gitleaks (full history), hadolint → Docker build → container tests → Trivy (fails on fixable HIGH/CRITICAL), and the Playwright browser tests. Actions are pinned to commit SHAs, tool images by digest, and the token is read-only.
+- **Dependabot** (`.github/dependabot.yml`): weekly PRs into `development` for pip packages, GitHub Actions and the Docker base image.
+- `tests/unit/test_ci_config.py` checks the CI and supply-chain policy itself (pinning, permissions, timeouts, triggers, no `pull_request_target`).
+- `requirements-e2e.txt` (Playwright, pinned). PyYAML added to the dev requirements.
 - **Production Docker image** (`Dockerfile`, `.dockerignore`, `gunicorn.conf.py`), ready for Google Cloud Run:
   - two-stage build (275 MB), gunicorn as PID 1 with a clean SIGTERM shutdown
   - non-root user (uid 10001); `fonts-dejavu-core` so PDFs keep their diacritics
@@ -27,6 +31,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - The current-conditions card was very tall. The illustration now sits beside the city name, and feels like / humidity / wind sit side by side.
   - The search placeholder was cut off. Phones get a short one ("Caută un oraș…").
   - The footer link was too small to tap comfortably (15 px). It's now at least 24 px tall.
+
+### Security
+- **Docker image hardened after the first Trivy scan**, which found 5 fixable HIGH vulnerabilities, all outside the app's own dependencies:
+  - The base image's own `pip` (with vendored urllib3 and msgpack) and ensurepip's bundled setuptools wheels are removed. The app never installs anything at runtime.
+  - Debian security updates are applied at build time (`libzstd1`).
+  - Result: 0 HIGH/CRITICAL findings.
+- **Base image pinned by digest** (`python:3.14-slim@sha256:…`); Dependabot bumps it.
+- **The container user is numeric** (`USER 10001:10001`), so platforms can verify it isn't root.
 
 ## [1.0.0] - 2026-11-25
 

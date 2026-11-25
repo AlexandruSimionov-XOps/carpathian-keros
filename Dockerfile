@@ -6,11 +6,11 @@
 #
 # Two stages: dependencies are installed into a virtualenv in `build`, and only that venv plus the app files are
 # copied into `runtime`. No compilers, pip caches or build tools reach the final image.
-
-ARG PYTHON_VERSION=3.14
+#
+# Base image pinned by digest (both stages): a tag can be re-pointed, a digest can't. Dependabot opens PRs to bump it.
 
 # ---------------------------------------------------------------- build: install Python dependencies
-FROM python:${PYTHON_VERSION}-slim AS build
+FROM python:3.14-slim@sha256:22eafb370920ad8b429e0aec3fff433e0669968519f5d60469d83729c138b28b AS build
 
 ENV PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -24,7 +24,7 @@ RUN pip install -r /tmp/requirements.txt \
  && pip uninstall -y pip
 
 # ---------------------------------------------------------------- runtime: what actually runs
-FROM python:${PYTHON_VERSION}-slim AS runtime
+FROM python:3.14-slim@sha256:22eafb370920ad8b429e0aec3fff433e0669968519f5d60469d83729c138b28b AS runtime
 
 ARG VERSION=dev
 LABEL org.opencontainers.image.title="Carpathian Keros" \
@@ -33,10 +33,16 @@ LABEL org.opencontainers.image.title="Carpathian Keros" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.version="${VERSION}"
 
-# A Unicode TTF for the PDF reports: without it they fall back to ASCII and lose ă â î ș ț.
+# - fonts-dejavu-core: a Unicode TTF for the PDF reports (without it they fall back to ASCII and lose ă â î ș ț).
+# - upgrade: Debian security fixes that landed after the base image was built (Trivy fails CI on fixable HIGH/CRITICAL).
+# - The interpreter's own pip and ensurepip's bundled wheels go: the app runs from /opt/venv and never installs
+#   anything, but they vendor urllib3, msgpack and setuptools, which had HIGH CVEs flagged by Trivy.
 RUN apt-get update \
+ && apt-get upgrade -y --no-install-recommends \
  && apt-get install -y --no-install-recommends fonts-dejavu-core \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
+ && python -m pip uninstall -y pip \
+ && rm -f /usr/local/lib/python3.*/ensurepip/_bundled/*.whl
 
 # Unprivileged user with a fixed UID (no home, no shell). The app files below stay owned by root, so the
 # running process can't modify its own code.
@@ -57,7 +63,8 @@ COPY . .
 # Precompile as root, so the read-only app doesn't have to at every cold start (Cloud Run scales from zero).
 RUN python -m compileall -q /app
 
-USER app
+# Numeric, so platforms can verify "not root" without resolving names (hadolint DL3066).
+USER 10001:10001
 EXPOSE 8080
 
 # Docker / docker compose use this; Cloud Run uses its own probes (see docs/setup.md).

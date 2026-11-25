@@ -4,4 +4,5 @@ pypdf==7.1.1
 ruff==0.17.6
 pip-audit==2.10.1
 pillow==13.0.0  # scripts/build_brand_assets.py
-# Optional browser tests (tests/e2e, run with CK_E2E=1): pip install playwright && playwright install chromium
+pyyaml==6.0.4   # tests/unit/test_ci_config.py
+# Browser tests (tests/e2e, CK_E2E=1) need Playwright too: pip install -r requirements-e2e.txt && playwright install chromium

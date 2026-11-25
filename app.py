@@ -64,6 +64,19 @@ log = logging.getLogger("carpathian_keros")
 mimetypes.add_type("application/manifest+json", ".webmanifest")  # not in every OS mime database
 
 
+def _read_version(pyproject: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pyproject.toml")) -> str:
+    """The app version from pyproject.toml (the single source of truth, Article IV). Regex, not tomllib: Python 3.10."""
+    try:
+        with open(pyproject, encoding="utf-8") as fh:
+            match = re.search(r'^version\s*=\s*"([^"]+)"', fh.read(), re.M)
+    except OSError:
+        return "unknown"
+    return match.group(1) if match else "unknown"
+
+
+APP_VERSION = _read_version()
+
+
 def _slug(text: str) -> str:
     """ASCII-only filename part: prevents header injection through Content-Disposition."""
     ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
@@ -102,6 +115,14 @@ def create_app(
     @app.get("/")
     def index():
         return render_template("index.html", app_name=APP_NAME, presets=PRESET_CITIES, city_count=len(cities))
+
+    @app.get("/healthz")
+    def healthz():
+        """Liveness for Cloud Run, CI smoke tests and Docker HEALTHCHECK. Deliberately never calls Open-Meteo:
+        an upstream outage must not make the platform restart a healthy container."""
+        resp = jsonify({"status": "ok", "version": APP_VERSION})
+        resp.cache_control.no_store = True
+        return resp
 
     @app.get("/favicon.ico")
     def favicon():

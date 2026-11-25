@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+- **Production Docker image** (`Dockerfile`, `.dockerignore`, `gunicorn.conf.py`), ready for Google Cloud Run:
+  - two-stage build (275 MB), gunicorn as PID 1 with a clean SIGTERM shutdown
+  - non-root user (uid 10001); `fonts-dejavu-core` so PDFs keep their diacritics
+  - an allow-list build context, so tests, docs, `.git` and `.env` never reach the image
+  - honours `PORT` (default 8080), `WEB_CONCURRENCY` and `GUNICORN_THREADS`
+- **`GET /healthz`** → `{"status": "ok", "version": "…"}`, for Cloud Run, CI smoke tests and the Docker `HEALTHCHECK`. It never calls Open-Meteo. This is an additive API change, so the next release is a MINOR one.
+- **Container tests** (`CK_DOCKER=1 pytest -m docker`): build and run the image, then check health, the API, PDF fonts, the non-root user, clean startup logs, image contents and size, no pip, and graceful shutdown.
+- gunicorn added to `requirements.txt`.
+
 ### Changed
 - **Branching strategy** (AGENTS.md, Article VI): work branches now merge into a new `development` integration branch (squash), and releases go `development` → `main` (merge commit), then a `vX.Y.Z` tag. Hotfixes branch from `main` and are merged back into `development`.
 

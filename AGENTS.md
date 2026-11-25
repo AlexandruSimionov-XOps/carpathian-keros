@@ -22,7 +22,7 @@ Weather comes from Open-Meteo (no API key). The city list comes from Wikipedia.
 | Production runtime | gunicorn in a two-stage Docker image (non-root, allow-list build context); target: Google Cloud Run | `Dockerfile`, `.dockerignore`, `gunicorn.conf.py` |
 | Infrastructure | OpenTofu: Cloud Run (europe-west1), Artifact Registry, Workload Identity Federation, budget alert, GCS state; guide in `docs/infrastructure.md` | `infra/`, `infra/bootstrap/` |
 | Tests | pytest (unit/API/PDF, offline), Node's test runner (JS), Playwright (opt-in e2e), container tests (opt-in) | `tests/` |
-| Versioning | SemVer; `version` in `pyproject.toml`, history in `CHANGELOG.md` | currently **1.1.0** |
+| Versioning | SemVer; `version` in `pyproject.toml`, history in `CHANGELOG.md` | currently **1.1.1** |
 | Docs | Markdown | `docs/`; start at `docs/README.md`, agents also read `docs/ai-agents.md` |
 
 **Endpoints:**
@@ -144,6 +144,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
    | JS `Math.round(−3.5)` / Python banker's `round(2.5)` | `tests/js/i18n.test.mjs`, `test_temperatures_are_whole_degrees_…` |
    | Both Ștefănești PDFs got the same filename | `test_shared_names_get_distinct_filenames` |
    | Escape didn't close the autocomplete | e2e `test_autocomplete_keyboard_flow` |
+   | Smoke test missed Cloud Run's lowercase (HTTP/2) header names | `test_header_checks_ignore_header_name_case` |
    | 7-day cards showed an I-beam cursor and a text caret | e2e `test_day_cards_are_buttons_without_a_text_caret` |
 3. **Tests never hit the network.** Open-Meteo is stubbed with the recorded `tests/fixtures/open_meteo_forecast.json`, served by `FakeSession`, which is injected through the service (Article I-D). The browser tests use the same fake: they run the real app through `tests/e2e/fake_server.py`, with only the weather source injected, so an Open-Meteo outage or rate limit can't fail them. Only the CDN scripts are fetched live. The only checks that call Open-Meteo for real are the opt-in container tests (`CK_DOCKER=1`) and, later, the post-deploy smoke test. Shared fakes live in `tests/fakes.py`.
 4. **Test layers and where they live:**
@@ -376,7 +377,7 @@ hotfix/… (from main) ──PR──▶ main ──▶ tag ──▶ merge main
 
 ---
 
-## Current gaps (as of 2026-11-25, v1.1.0)
+## Current gaps (as of 2026-11-25, v1.1.1)
 
 The constitution describes the target state. These items aren't in place yet. Don't pretend they are, and set them up when a task touches them (or when the user asks):
 

@@ -136,7 +136,7 @@ It uses the same cache as `/api/weather`, so exporting right after viewing a cit
 A liveness check for Cloud Run, CI smoke tests and the Docker `HEALTHCHECK`.
 
 ```json
-{ "status": "ok", "version": "1.1.0" }
+{ "status": "ok", "version": "1.1.1" }
 ```
 
 - `version` comes from `pyproject.toml` (it's `"unknown"` if that file is missing).

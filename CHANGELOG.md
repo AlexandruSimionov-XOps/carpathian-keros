@@ -6,9 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-25
+
+**The first live release** at **https://carpathian-keros.cloud.run**.
+
+### Fixed
+- **The deploy's smoke test rejected a healthy candidate** with "Content-Security-Policy missing", so the `v1.1.0` deploy stopped before any traffic moved (production was untouched). Cloud Run answers over HTTP/2, which sends header names in lowercase, and `scripts/smoke_test.py` copied the headers into a case-sensitive `dict`. It now keeps urllib's case-insensitive headers. The regression test runs the checks against a server that lowercases every header name. The app itself is unchanged.
+
 ## [1.1.0] - 2026-11-25
 
-**The first deployed release.** Carpathian Keros now runs on Google Cloud Run at **https://carpathian-keros.cloud.run**, and every later `v*` tag deploys itself.
+Adds deployment to Google Cloud Run: every `v*` tag deploys itself. The `v1.1.0` deploy stopped at the candidate's smoke test (fixed in 1.1.1), so 1.1.1 is the first live release.
 
 ### Added
 - **Live deployment on Google Cloud Run** (europe-west1, free tier), with free HTTPS at `https://carpathian-keros.cloud.run`. The custom URL is a Cloud Run Preview feature, claimed once by hand; the default `*.run.app` URL stays as a fallback.

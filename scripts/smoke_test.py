@@ -15,6 +15,7 @@ import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable
+from email.message import Message
 
 USER_AGENT = "carpathian-keros-smoke-test"  # generic on purpose: no personal details in outbound requests (V.3)
 
@@ -33,13 +34,15 @@ def _require(ok: bool, message: str) -> None:
         raise CheckFailed(message)
 
 
-def _get(url: str, timeout: float) -> tuple[int, dict[str, str], bytes]:
+def _get(url: str, timeout: float) -> tuple[int, Message, bytes]:
+    # Headers stay a Message, whose lookups ignore case: Cloud Run (HTTP/2) sends lowercase names, and a plain
+    # dict(...) copy made "Content-Security-Policy" look missing on the first deploy.
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})  # noqa: S310 - http(s) URL from the caller
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310
-            return resp.status, dict(resp.headers), resp.read()
+            return resp.status, resp.headers, resp.read()
     except urllib.error.HTTPError as exc:
-        return exc.code, dict(exc.headers), exc.read()
+        return exc.code, exc.headers, exc.read()
 
 
 def _retry(name: str, check: Callable[[], str], attempts: int, delay: float) -> str:

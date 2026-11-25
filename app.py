@@ -116,10 +116,12 @@ def create_app(
     def index():
         return render_template("index.html", app_name=APP_NAME, presets=PRESET_CITIES, city_count=len(cities))
 
-    @app.get("/healthz")
-    def healthz():
-        """Liveness for Cloud Run, CI smoke tests and Docker HEALTHCHECK. Deliberately never calls Open-Meteo:
-        an upstream outage must not make the platform restart a healthy container."""
+    @app.get("/health")
+    def health():
+        """Liveness for Cloud Run probes, CI/CD smoke tests and Docker HEALTHCHECK. Deliberately never calls Open-Meteo:
+        an upstream outage must not make the platform restart a healthy container.
+
+        Not /healthz: Cloud Run's front end reserves paths ending in z; public requests to /healthz get Google's 404."""
         resp = jsonify({"status": "ok", "version": APP_VERSION})
         resp.cache_control.no_store = True
         return resp

@@ -92,12 +92,12 @@ run "cloud_run_fits_the_free_tier_and_is_hardened" {
     error_message = "The image listens on 8080."
   }
   assert {
-    condition     = google_cloud_run_v2_service.app.template[0].containers[0].startup_probe[0].http_get[0].path == "/healthz"
-    error_message = "Startup probe must use the dependency-free /healthz."
+    condition     = google_cloud_run_v2_service.app.template[0].containers[0].startup_probe[0].http_get[0].path == "/health"
+    error_message = "Startup probe must use the dependency-free /health."
   }
   assert {
-    condition     = google_cloud_run_v2_service.app.template[0].containers[0].liveness_probe[0].http_get[0].path == "/healthz"
-    error_message = "Liveness probe must use the dependency-free /healthz."
+    condition     = google_cloud_run_v2_service.app.template[0].containers[0].liveness_probe[0].http_get[0].path == "/health"
+    error_message = "Liveness probe must use the dependency-free /health."
   }
   assert {
     condition     = google_cloud_run_v2_service.app.template[0].service_account == google_service_account.runtime.email

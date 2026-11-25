@@ -54,7 +54,7 @@ def container(image):
     try:
         for _ in range(60):
             try:
-                urllib.request.urlopen(f"{url}/healthz", timeout=2)  # noqa: S310 - local container
+                urllib.request.urlopen(f"{url}/health", timeout=2)  # noqa: S310 - local container
                 break
             except OSError:
                 time.sleep(0.5)
@@ -71,7 +71,7 @@ def get(url: str):
 
 
 def test_health_and_version(container):
-    status, headers, body = get(container["url"] + "/healthz")
+    status, headers, body = get(container["url"] + "/health")
     assert status == 200
     assert json.loads(body)["status"] == "ok"
     assert headers["X-Content-Type-Options"] == "nosniff"

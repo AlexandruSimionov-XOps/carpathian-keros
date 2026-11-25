@@ -69,7 +69,7 @@ EXPOSE 8080
 
 # Docker / docker compose use this; Cloud Run uses its own probes (see docs/setup.md).
 HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --start-interval=2s --retries=3 \
-  CMD ["python", "-c", "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/healthz' % os.environ.get('PORT', '8080'), timeout=2)"]
+  CMD ["python", "-c", "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/health' % os.environ.get('PORT', '8080'), timeout=2)"]
 
 # Exec form: gunicorn is PID 1 and receives SIGTERM directly, so Cloud Run's shutdown is clean.
 CMD ["gunicorn", "-c", "gunicorn.conf.py", "app:app"]

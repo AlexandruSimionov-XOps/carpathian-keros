@@ -1,5 +1,5 @@
 # The public website. Sized for the free tier: scale to zero, CPU only while a request is being handled,
-# at most var.max_instances instances. The image uses PORT=8080 (Cloud Run sets it) and GET /healthz.
+# at most var.max_instances instances. The image uses PORT=8080 (Cloud Run sets it) and GET /health (not /healthz: Cloud Run reserves paths ending in z).
 
 resource "google_cloud_run_v2_service" "app" {
   name                = var.service_name
@@ -35,7 +35,7 @@ resource "google_cloud_run_v2_service" "app" {
 
       startup_probe {
         http_get {
-          path = "/healthz"
+          path = "/health"
         }
         period_seconds    = 2
         timeout_seconds   = 2
@@ -44,7 +44,7 @@ resource "google_cloud_run_v2_service" "app" {
 
       liveness_probe {
         http_get {
-          path = "/healthz"
+          path = "/health"
         }
         period_seconds    = 30
         timeout_seconds   = 3

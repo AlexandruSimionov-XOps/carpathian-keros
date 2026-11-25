@@ -33,7 +33,7 @@ Weather comes from Open-Meteo (no API key). The city list comes from Wikipedia.
 | `GET /api/cities` | The allow-list, used for autocomplete |
 | `GET /api/weather?city=` | Weather JSON for one city |
 | `GET /api/report/export?city=&lang=en\|ro` | PDF report download |
-| `GET /healthz` | Liveness: `{"status","version"}`. Never calls Open-Meteo |
+| `GET /health` | Liveness: `{"status","version"}`. Never calls Open-Meteo |
 
 **Run locally:**
 
@@ -62,6 +62,7 @@ CK_DOCKER=1 .venv/bin/pytest -m docker    # optional: build + run the image and 
 2. **Temperatures are displayed as whole degrees, rounded half away from zero** (3.5 → 4, 3.4 → 3, −3.5 → −4). This applies in both the UI and the PDF. The API stays unrounded.
 3. **Every user-facing string exists in `en` and `ro`.** Romanian uses comma-below `ș ț`, never the cedilla forms `ş ţ`. The WMO labels are duplicated in `services/i18n.py` and `static/js/i18n.js` and must stay identical.
 4. **The brand name "Carpathian Keros"** appears in `<title>`, the nav header and the PDF header.
+5. **No route may end in `z`** (`/healthz`, `/statusz`, …). Cloud Run's front end reserves such paths: they work locally and in tests, then silently return Google's 404 in production. The health endpoint is `/health` (`test_no_route_ends_in_z`).
 
 ---
 
@@ -154,7 +155,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
    | PDF | pytest | `tests/pdf/` | starts with `%PDF`, one page, both languages, diacritics present, and the no-font fallback doesn't raise |
    | JS unit | Node `node:test` (run by `tests/test_javascript.py`) | `tests/js/` | `formatNumber` rounding, en/ro key parity, autocomplete ranking, completion, `resolveInput` |
    | Frontend | Playwright (opt-in) | `tests/e2e/` | presets order, RO/EN toggle, autocomplete keys (↑↓ Enter Tab Esc), no page errors or CSP violations **after** a city or language change |
-   | Container | pytest + Docker CLI (opt-in, `CK_DOCKER=1`) | `tests/docker/` | `/healthz`, API, PDF diacritics (fonts in the image), non-root user, no errors in startup logs, image contents and size, no pip, SIGTERM shutdown |
+   | Container | pytest + Docker CLI (opt-in, `CK_DOCKER=1`) | `tests/docker/` | `/health`, API, PDF diacritics (fonts in the image), non-root user, no errors in startup logs, image contents and size, no pip, SIGTERM shutdown |
    | Infrastructure | `tofu test` with a **mocked** Google provider (no credentials, nothing created) + pytest policy checks | `infra/tests/`, `infra/bootstrap/tests/`, `tests/unit/test_infra_policy.py` | WIF trusts only this repo's `deploy.yml` on `main`/`v*` tags, Cloud Run free-tier sizing and probes, resource-scoped IAM, image cleanup, budget, state bucket privacy, input validation; no SA keys, no project-wide IAM, `allUsers` only as the public invoker |
 
    In e2e tests, wait with `expect(...)`, never `page.wait_for_function("<string>")`. String predicates need `eval`, which the CSP blocks, and the CSP must not be loosened for tests.
@@ -183,7 +184,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
 2. The PDF download filename pattern and the `lang` values
 3. The browser `localStorage` keys `ck-lang` and `ck-city`, and their values
 4. The schema of `data/cities_ro.json`, and the CLI flags of `scripts/build_cities.py`
-5. Environment variables (`HOST`, `PORT`, `FLASK_DEBUG`, `CK_PDF_FONT*`, and in the image `WEB_CONCURRENCY`, `GUNICORN_THREADS`), the image's listening port (8080 by default) and `GET /healthz`
+5. Environment variables (`HOST`, `PORT`, `FLASK_DEBUG`, `CK_PDF_FONT*`, and in the image `WEB_CONCURRENCY`, `GUNICORN_THREADS`), the image's listening port (8080 by default) and `GET /health`
 
 **Rules for breaking changes:**
 - **Prefer additive changes.** Add a new field instead of renaming one, or add a new param with the old behaviour as the default.
@@ -222,7 +223,7 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 | Flask → `api.open-meteo.com` | Semi-trusted | The **only** outbound host at runtime. Timeouts (3 s connect / 8 s read) and bounded retries are mandatory on every outbound call. |
 | `scripts/build_cities.py` → Wikipedia, Open-Meteo Geocoding | Untrusted | Offline only. Review the generated diff before committing (Article VI). |
 | GitHub Actions → Google Cloud | Federated, least privilege | **Workload Identity Federation only, never service-account keys.** The trust condition pins the repository and owner by **numeric ID**, the `deploy.yml` workflow, and `main`/`v*` refs. The deployer has resource-scoped roles only (push to one repository, deploy one service, act as `ck-runtime`). The app's runtime account has **no roles**. No project-wide IAM. Any change to `infra/wif.tf` or `infra/iam.tf` is security-sensitive (V.4). |
-| Container image → its host (Docker, Cloud Run) | Least privilege | Runs as uid 10001 (no home, no shell), with app files owned by root. `.dockerignore` is an **allow-list**: add a path there only if the running app needs it. **Never** put secrets, `.env` files or credentials into the image or a build arg; inject them at runtime (Cloud Run secrets / env). `/healthz` stays dependency-free. |
+| Container image → its host (Docker, Cloud Run) | Least privilege | Runs as uid 10001 (no home, no shell), with app files owned by root. `.dockerignore` is an **allow-list**: add a path there only if the running app needs it. **Never** put secrets, `.env` files or credentials into the image or a build arg; inject them at runtime (Cloud Run secrets / env). `/health` stays dependency-free. |
 | Browser → CDNs (Tailwind, jsDelivr) | Third-party | Versions pinned in `index.html`. jsDelivr scripts carry Subresource Integrity (`integrity="sha384-…"` + `crossorigin="anonymous"`). **When you bump a version, recompute the hash**, or the browser refuses to load the file. Fonts are self-hosted (`static/fonts/`). |
 
 - **No SSRF.** Never build an outbound URL or host from user input. Coordinates come only from the registry.

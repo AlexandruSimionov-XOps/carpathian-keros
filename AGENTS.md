@@ -19,7 +19,8 @@ Weather comes from Open-Meteo (no API key). The city list comes from Wikipedia.
 | Domain services | Python 3.10+ (developed on 3.14), `requests`, `fpdf2` | `services/` |
 | Data | Generated JSON, committed | `data/cities_ro.json` (built by `scripts/build_cities.py`) |
 | UI | Jinja2 + Tailwind (CDN) + GSAP + ApexCharts, plain ES2020, no build step | `templates/`, `static/` |
-| Tests | pytest (unit/API/PDF, offline), Node's test runner (JS), Playwright (opt-in e2e) | `tests/` |
+| Production runtime | gunicorn in a two-stage Docker image (non-root, allow-list build context); target: Google Cloud Run | `Dockerfile`, `.dockerignore`, `gunicorn.conf.py` |
+| Tests | pytest (unit/API/PDF, offline), Node's test runner (JS), Playwright (opt-in e2e), container tests (opt-in) | `tests/` |
 | Versioning | SemVer; `version` in `pyproject.toml`, history in `CHANGELOG.md` | currently **1.0.0** |
 | Docs | Markdown | `docs/`; start at `docs/README.md`, agents also read `docs/ai-agents.md` |
 
@@ -31,12 +32,14 @@ Weather comes from Open-Meteo (no API key). The city list comes from Wikipedia.
 | `GET /api/cities` | The allow-list, used for autocomplete |
 | `GET /api/weather?city=` | Weather JSON for one city |
 | `GET /api/report/export?city=&lang=en\|ro` | PDF report download |
+| `GET /healthz` | Liveness: `{"status","version"}`. Never calls Open-Meteo |
 
 **Run locally:**
 
 ```bash
 .venv/bin/python app.py                  # http://127.0.0.1:5000
 HOST=0.0.0.0 .venv/bin/python app.py     # on WSL2, so the Windows browser can reach it
+docker build -t carpathian-keros . && docker run --rm -p 8080:8080 carpathian-keros   # the production image
 ```
 
 - If the developer runs the app inside **WSL2** and browses from Windows, bind to `0.0.0.0`.
@@ -50,6 +53,7 @@ HOST=0.0.0.0 .venv/bin/python app.py     # on WSL2, so the Windows browser can r
 .venv/bin/pytest                          # unit + API + PDF + JS, offline (~2 s)
 .venv/bin/ruff check . && .venv/bin/ruff format --check .
 CK_E2E=1 .venv/bin/pytest -m e2e          # optional: browser tests (Playwright + network)
+CK_DOCKER=1 .venv/bin/pytest -m docker    # optional: build + run the image and test it (Docker + network)
 ```
 
 **Hard product rules.** The full list is in `docs/ai-agents.md` → *Invariants*. The ones that are easiest to break:
@@ -149,6 +153,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
    | PDF | pytest | `tests/pdf/` | starts with `%PDF`, one page, both languages, diacritics present, and the no-font fallback doesn't raise |
    | JS unit | Node `node:test` (run by `tests/test_javascript.py`) | `tests/js/` | `formatNumber` rounding, en/ro key parity, autocomplete ranking, completion, `resolveInput` |
    | Frontend | Playwright (opt-in) | `tests/e2e/` | presets order, RO/EN toggle, autocomplete keys (↑↓ Enter Tab Esc), no page errors or CSP violations **after** a city or language change |
+   | Container | pytest + Docker CLI (opt-in, `CK_DOCKER=1`) | `tests/docker/` | `/healthz`, API, PDF diacritics (fonts in the image), non-root user, no errors in startup logs, image contents and size, no pip, SIGTERM shutdown |
 
    In e2e tests, wait with `expect(...)`, never `page.wait_for_function("<string>")`. String predicates need `eval`, which the CSP blocks, and the CSP must not be loosened for tests.
 
@@ -175,7 +180,7 @@ templates/static (UI)  ──HTTP──▶  app.py  ──▶  services/*  ─�
 2. The PDF download filename pattern and the `lang` values
 3. The browser `localStorage` keys `ck-lang` and `ck-city`, and their values
 4. The schema of `data/cities_ro.json`, and the CLI flags of `scripts/build_cities.py`
-5. Environment variables (`HOST`, `PORT`, `FLASK_DEBUG`, `CK_PDF_FONT*`)
+5. Environment variables (`HOST`, `PORT`, `FLASK_DEBUG`, `CK_PDF_FONT*`, and in the image `WEB_CONCURRENCY`, `GUNICORN_THREADS`), the image's listening port (8080 by default) and `GET /healthz`
 
 **Rules for breaking changes:**
 - **Prefer additive changes.** Add a new field instead of renaming one, or add a new param with the old behaviour as the default.
@@ -213,6 +218,7 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 | Browser → Flask | Untrusted | Validation as in V.1. Read-only `GET` endpoints, no state changes, no cookies or sessions. |
 | Flask → `api.open-meteo.com` | Semi-trusted | The **only** outbound host at runtime. Timeouts (3 s connect / 8 s read) and bounded retries are mandatory on every outbound call. |
 | `scripts/build_cities.py` → Wikipedia, Open-Meteo Geocoding | Untrusted | Offline only. Review the generated diff before committing (Article VI). |
+| Container image → its host (Docker, Cloud Run) | Least privilege | Runs as uid 10001 (no home, no shell), with app files owned by root. `.dockerignore` is an **allow-list**: add a path there only if the running app needs it. **Never** put secrets, `.env` files or credentials into the image or a build arg; inject them at runtime (Cloud Run secrets / env). `/healthz` stays dependency-free. |
 | Browser → CDNs (Tailwind, jsDelivr) | Third-party | Versions pinned in `index.html`. jsDelivr scripts carry Subresource Integrity (`integrity="sha384-…"` + `crossorigin="anonymous"`). **When you bump a version, recompute the hash**, or the browser refuses to load the file. Fonts are self-hosted (`static/fonts/`). |
 
 - **No SSRF.** Never build an outbound URL or host from user input. Coordinates come only from the registry.
@@ -272,7 +278,7 @@ Validate every input **at the boundary where it enters**, against an allow-list,
 | Open-Meteo | CC BY 4.0 | UI footer and PDF footer |
 | Wikipedia city list | CC BY-SA 4.0 | UI footer, and the `license` / `source` fields in `data/cities_ro.json` |
 
-  - **Dependency licences:** Flask (BSD-3), requests (Apache-2.0), fpdf2 (LGPL-3.0, used unmodified as a library), GSAP (GreenSock standard licence), ApexCharts (MIT), Tailwind (MIT), Inter font (SIL OFL 1.1, licence shipped in `static/fonts/OFL.txt`). Dev only: pytest (MIT), pypdf (BSD-3), ruff (MIT), pip-audit (Apache-2.0). Before adding a dependency, check that its licence is compatible and note it in the PR.
+  - **Dependency licences:** Flask (BSD-3), requests (Apache-2.0), fpdf2 (LGPL-3.0, used unmodified as a library), GSAP (GreenSock standard licence), ApexCharts (MIT), Tailwind (MIT), Inter font (SIL OFL 1.1, licence shipped in `static/fonts/OFL.txt`), gunicorn (MIT). In the Docker image: the Python base image (PSF + Debian packages) and DejaVu fonts (Bitstream Vera licence, free). Dev only: pytest (MIT), pypdf (BSD-3), ruff (MIT), pip-audit (Apache-2.0). Before adding a dependency, check that its licence is compatible and note it in the PR.
   - **Open-Meteo's free tier is non-commercial.** Commercial use needs an Open-Meteo subscription; flag this to the user if the use changes.
 
 **Privacy:** no tracking and no analytics. The only data stored on the client is `ck-lang` / `ck-city` in `localStorage`, and the server stores nothing. Any new data collection needs the user's approval and a docs entry.
@@ -349,7 +355,8 @@ The constitution describes the target state. These items aren't in place yet. Do
 - **GitHub isn't fully configured yet.** The repo is on GitHub, with `main` (v1.0.0, the one allowed direct commit) and `development`, and Article VI applies. Still to do: rulesets on **both** `main` and `development` (PR required, no force-push, no deletion), and CI as a required check. Don't restrict the repo to squash-merge only: release PRs (`development` → `main`) need merge commits.
 - **No CI.** Until there is CI, run `pytest`, `ruff check .`, `ruff format --check .` and (before a release) `pip-audit -r requirements.txt` locally. Opt-in browser tests: `CK_E2E=1 pytest -m e2e`.
 - **Tailwind Play CDN.** It can't carry an SRI hash (its content isn't pinned by hash), and it injects `<style>`, so the CSP needs `style-src 'unsafe-inline'`. Fix: compile Tailwind with its CLI into `static/css/` and drop the CDN. ApexCharts also sets inline styles, so check whether `'unsafe-inline'` can actually be removed afterwards.
-- **No HSTS header.** It belongs on the TLS-terminating reverse proxy (`Strict-Transport-Security`), not in the app, which may run over plain HTTP locally.
+- **No HSTS header.** It belongs where TLS terminates (`Strict-Transport-Security`), not in the app, which also runs over plain HTTP locally. On Cloud Run, Google's front end terminates TLS but doesn't add HSTS. Add it when deploying, only for requests that arrived over HTTPS (`X-Forwarded-Proto: https`).
+- **Not deployed yet.** The Docker image is ready and tested; Cloud Run deployment and the CI/CD pipeline are next. The base image is pinned by tag (`python:3.14-slim`), not by digest; pin the digest and let Dependabot update it once CI exists.
 
 ## Working agreements
 

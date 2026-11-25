@@ -131,6 +131,18 @@ curl -OJ "http://127.0.0.1:5000/api/report/export?city=Brașov&lang=ro"
 
 It uses the same cache as `/api/weather`, so exporting right after viewing a city doesn't call Open-Meteo again.
 
+## `GET /healthz`
+
+A liveness check for Cloud Run, CI smoke tests and the Docker `HEALTHCHECK`.
+
+```json
+{ "status": "ok", "version": "1.0.0" }
+```
+
+- `version` comes from `pyproject.toml` (it's `"unknown"` if that file is missing).
+- **It never calls Open-Meteo.** An upstream outage must not make the platform restart a healthy container; upstream problems show up as `502 upstream_error` on the data endpoints instead.
+- `Cache-Control: no-store`.
+
 ## Errors
 
 Both endpoints return errors as JSON:

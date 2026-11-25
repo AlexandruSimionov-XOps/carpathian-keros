@@ -50,6 +50,16 @@ Version: **1.0.0** (`pyproject.toml`). History: [`CHANGELOG.md`](CHANGELOG.md). 
 | `GET /api/cities` | The list of allowed cities (used for autocomplete) |
 | `GET /api/weather?city=<name>` | Location, current conditions, the next 24 hours and 7 days as JSON. `city` must be on the list |
 | `GET /api/report/export?city=<name>&lang=<en\|ro>` | PDF report download |
+| `GET /healthz` | Liveness check: `{"status": "ok", "version": "…"}`; never calls Open-Meteo |
+
+## Docker
+
+```bash
+docker build -t carpathian-keros .
+docker run --rm -p 8080:8080 carpathian-keros     # → http://localhost:8080
+```
+
+Production image: gunicorn, a non-root user, the PDF fonts installed, and an allow-list build context. Details and container tests are in [docs/setup.md](docs/setup.md#run-with-docker).
 
 Errors come back as `{"error": "<code>", "message": "..."}`. The codes are `invalid_city` (400), `city_not_found` (404) and `upstream_error` (502). The frontend translates each code.
 

@@ -4,7 +4,10 @@
 
 ```
 carpathian-keros/
-├── app.py                       create_app() factory: routes, presets, error → HTTP, security headers
+├── app.py                       create_app() factory: routes, presets, error → HTTP, security headers, /healthz
+├── gunicorn.conf.py             Production server settings (PORT, workers, timeouts) used by the image
+├── Dockerfile                   Two-stage production image (gunicorn, non-root, PDF fonts) for Docker / Cloud Run
+├── .dockerignore                Allow-list: what may enter the image
 ├── data/cities_ro.json          The 319 official cities (generated, committed)
 ├── scripts/build_cities.py      Generator for data/cities_ro.json (Wikipedia + Open-Meteo Geocoding)
 ├── scripts/build_brand_assets.py  Generator for favicons, header logo, README logo, social preview (Pillow)
@@ -25,12 +28,12 @@ carpathian-keros/
 │   ├── fonts/                   Self-hosted Inter (woff2) + OFL.txt
 │   ├── images/                  Generated favicon set (.ico/.png) and header logo
 │   └── site.webmanifest         Web app manifest (name, theme colour, 192/512 icons)
-├── tests/                       pytest (unit, api, pdf), js (node:test), e2e (Playwright, opt-in), fixtures
+├── tests/                       pytest (unit, api, pdf), js (node:test), e2e (Playwright) and docker (opt-in), fixtures
 ├── docs/                        This documentation (+ docs/images/logo-stacked.png for the README)
 ├── AGENTS.md / CLAUDE.md        Constitution and agent instructions (CLAUDE.md only imports AGENTS.md)
 ├── CHANGELOG.md                 Release history (Keep a Changelog)
 ├── pyproject.toml               Version (single source of truth), pytest and ruff config
-├── requirements.txt             Runtime, pinned: flask, requests, fpdf2
+├── requirements.txt             Runtime, pinned: flask, requests, fpdf2, gunicorn
 └── requirements-dev.txt         Tooling, pinned: pytest, pypdf, ruff, pip-audit
 ```
 

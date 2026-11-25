@@ -11,6 +11,7 @@ testpaths = ["tests"]
 addopts = "-ra --strict-markers"
 markers = [
     "e2e: browser tests against a live server (opt-in: CK_E2E=1, needs Playwright + network)",
+    "docker: build and run the production image (opt-in: CK_DOCKER=1, needs Docker + network)",
 ]
 
 [tool.ruff]

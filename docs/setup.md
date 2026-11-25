@@ -89,13 +89,47 @@ done
 
 All four should print `200`.
 
-## Production deployment
+## Run with Docker
 
-The built-in Flask server is for development only. Use a WSGI server instead:
+The production image (`Dockerfile`) runs the app under **gunicorn** as an unprivileged user, with the PDF fonts installed. This is the same image that goes to Google Cloud Run.
 
 ```bash
-pip install gunicorn
-gunicorn -w 2 -b 0.0.0.0:8000 app:app
+docker build -t carpathian-keros --build-arg VERSION=1.0.0 .
+docker run --rm -p 8080:8080 carpathian-keros        # → http://localhost:8080
+curl http://localhost:8080/healthz                    # {"status":"ok","version":"1.0.0"}
+```
+
+On WSL2, `http://localhost:8080` also works from the Windows browser. Stop the container with **Ctrl+C**.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PORT` | `8080` | Listening port. Cloud Run sets it automatically |
+| `WEB_CONCURRENCY` | `2` | gunicorn worker processes |
+| `GUNICORN_THREADS` | `4` | Threads per worker (requests mostly wait on Open-Meteo) |
+| `CK_PDF_FONT`, `CK_PDF_FONT_BOLD` | DejaVu, installed in the image | Override the PDF font |
+
+**What's in the image** (about 275 MB; the registry stores it compressed):
+- **Build:** two stages. Dependencies are installed into a virtualenv in a build stage, and only that venv plus the app files reach the final image. pip is removed from the venv.
+- **Contents:** `.dockerignore` is an **allow-list** (`app.py`, `gunicorn.conf.py`, `pyproject.toml`, `requirements.txt`, `services/`, `templates/`, `static/`, `data/`). Tests, docs, `.git`, `.env` files and the brand originals never enter the build.
+- **User:** uid 10001, with no home and no shell. The app files are owned by root, so the process can't change its own code.
+- **Process:** gunicorn is PID 1 (exec form), so `docker stop` and Cloud Run's SIGTERM shut it down cleanly in about a second. Settings and their reasons are in `gunicorn.conf.py`.
+- **Health:** a `HEALTHCHECK` calls `GET /healthz`, which never contacts Open-Meteo, so an upstream outage can't make a healthy container look broken.
+
+**Container tests** build the image, run it, and check the health endpoint, the API, PDF diacritics, the non-root user, clean logs, image contents and size, and SIGTERM shutdown:
+```bash
+CK_DOCKER=1 pytest -m docker                                  # builds carpathian-keros:test first
+CK_DOCKER=1 CK_IMAGE=carpathian-keros:ci pytest -m docker     # or test an image built elsewhere (CI)
+```
+
+If `docker` says *permission denied … docker.sock*, your user isn't in the `docker` group yet (`sudo usermod -aG docker $USER`). On WSL, restart WSL after that (`wsl --shutdown` in PowerShell).
+
+## Production deployment
+
+Use the Docker image above (target: Google Cloud Run). Without Docker, run the app under gunicorn with the same settings as the image:
+
+```bash
+pip install -r requirements.txt        # includes gunicorn
+gunicorn -c gunicorn.conf.py app:app   # listens on $PORT (default 8080)
 ```
 
 Things to know:

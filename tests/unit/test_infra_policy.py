@@ -5,6 +5,7 @@ Complements `tofu test`, which checks values: this checks for things that must n
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -60,7 +61,28 @@ def test_no_account_specific_ids_in_tf_code(pattern):
     assert not re.search(pattern, all_tf())
 
 
-def test_local_state_and_variable_files_are_git_ignored():
-    ignored = (ROOT / ".gitignore").read_text(encoding="utf-8")
-    for pattern in ("*.tfstate", ".terraform/", "*.tfvars", "backend.hcl"):
-        assert pattern in ignored, pattern
+def test_foundation_apis_have_a_single_owner():
+    """The bootstrap enables the APIs everything else depends on; infra/ must not manage them a second time
+    (two states owning one resource fight over it)."""
+    main_apis = (INFRA / "apis.tf").read_text(encoding="utf-8")
+    for api in ("cloudresourcemanager.googleapis.com", "serviceusage.googleapis.com", "storage.googleapis.com"):
+        assert api not in main_apis, api
+        assert api in (INFRA / "bootstrap/main.tf").read_text(encoding="utf-8"), api
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "infra/terraform.tfvars",
+        "infra/backend.hcl",
+        "infra/tfplan",
+        "infra/x.tfplan",
+        "infra/terraform.tfstate",
+        "infra/.terraform/providers",
+    ],
+)
+def test_local_state_plans_and_variable_files_are_git_ignored(path):
+    """Plans and state can contain account details (billing account, project number): never commit them.
+    Regression: the plan file `tfplan` (no extension, as in docs/infrastructure.md) wasn't ignored."""
+    result = subprocess.run(["git", "check-ignore", "-q", path], cwd=ROOT, check=False)  # noqa: S603, S607
+    assert result.returncode == 0, f"{path} is not git-ignored"

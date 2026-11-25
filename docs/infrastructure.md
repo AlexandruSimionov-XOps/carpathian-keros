@@ -17,8 +17,8 @@ GitHub Actions (deploy.yml, on a v* tag)
 
 | File | Resources | Notes |
 |---|---|---|
-| `infra/bootstrap/` | GCS bucket `<project>-tfstate` for OpenTofu state | Versioned, private (`public_access_prevention = enforced`), never force-destroyed |
-| `infra/apis.tf` | Run, Artifact Registry, IAM, IAM Credentials, STS, Resource Manager, Billing Budgets APIs | Never disabled on destroy |
+| `infra/bootstrap/` | GCS bucket `<project>-tfstate` for OpenTofu state, and the **foundation APIs** (Storage, Resource Manager, Service Usage) | Versioned, private (`public_access_prevention = enforced`), never force-destroyed. The APIs live here because `infra/` needs them while it *plans* |
+| `infra/apis.tf` | Run, Artifact Registry, IAM, IAM Credentials, STS, Billing Budgets APIs | Never disabled on destroy |
 | `infra/registry.tf` | Docker repository `carpathian-keros` | Immutable tags; keeps the 5 newest images and deletes older ones after 7 days (stays inside the 0.5 GB free storage); paid image scanning off (Trivy scans in CI) |
 | `infra/iam.tf` | Service accounts `ck-runtime` (no roles) and `ck-deployer` | Every grant is **resource-scoped**: push to this repository, deploy this service, act as `ck-runtime`. No project-wide roles, no keys |
 | `infra/wif.tf` | Workload Identity pool `github` + provider | Trusts **only** repository ID 1471744541 (owner 356566022), **only** the `deploy.yml` workflow, **only** on `main` or `v*` tags |
@@ -60,7 +60,7 @@ gcloud billing projects describe carpathian-keros    # must show billingEnabled:
 ```bash
 cd infra/bootstrap
 tofu init
-tofu apply -var="project_id=carpathian-keros"        # review the plan: 1 API + 1 bucket
+tofu apply -var="project_id=carpathian-keros"        # review the plan: 3 APIs + 1 bucket
 ```
 
 Then move the bootstrap's own state into the bucket it just created, so nothing lives only on your laptop:
@@ -161,4 +161,6 @@ docker run --rm -v "$PWD:/src:ro" aquasec/trivy:0.76.2 config --skip-dirs .terra
 | `Error 409: … already exists` for `github` pool | A pool with that ID was deleted less than 30 days ago; wait or change the ID in `wif.tf` |
 | First revision fails its startup probe | The placeholder image didn't answer `/healthz`. Set `initial_image` to a pushed Carpathian Keros image and apply again |
 | `.cloud.run` mapping: name not available | Choose another name (6–63 characters). It's first come, first served |
+| `infra/` plan: `Cloud Resource Manager API has not been used in project … (SERVICE_DISABLED)` | The bootstrap enables that API; apply (or re-apply) `infra/bootstrap` first, wait about a minute, then plan `infra/` again |
+| `gcloud billing … describe` shows `billingEnabled: false` | No billing account linked. Create one (console → Billing) and `gcloud billing projects link <project> --billing-account=<ID>`. Cloud Run needs billing even within the free tier |
 | `gcloud` returns 429 `RATE_LIMIT_EXCEEDED` on `cloudbilling` | Temporary limit on gcloud's shared client project; wait a minute. Setting the quota project (step 1) avoids it for OpenTofu |

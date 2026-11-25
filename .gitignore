@@ -22,6 +22,7 @@ htmlcov/
 *.tfstate
 *.tfstate.*
 *.tfplan
+tfplan
 *.tfvars
 !*.tfvars.example
 backend.hcl

@@ -20,9 +20,15 @@ mock_provider "google" {
   }
 }
 
+# Every value the assertions depend on is set here: `tofu test` also loads a local terraform.tfvars (git-ignored,
+# account-specific), and the tests must give the same result on every machine and in CI.
 variables {
   project_id         = "carpathian-keros"
   billing_account_id = "ABCDEF-123456-ABCDEF"
+  region             = "europe-west1"
+  max_instances      = 2
+  budget_amount      = 1
+  budget_currency    = "EUR"
 }
 
 run "workload_identity_trusts_only_this_repository_and_its_deploy_workflow" {

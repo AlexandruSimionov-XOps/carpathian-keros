@@ -10,7 +10,7 @@ terraform {
 
   # The bootstrap starts with local state (it creates the bucket the main config stores its state in).
   # After the first apply, it migrates its own state into that bucket: see docs/infrastructure.md.
-  # backend "gcs" {}
+  backend "gcs" {}
 }
 
 provider "google" {

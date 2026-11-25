@@ -1,9 +1,24 @@
 # The GCS bucket that holds the OpenTofu state of infra/ (and, after migration, of this bootstrap too).
 # Created once, by hand, from a laptop: everything else is created by infra/ using this state.
 
-resource "google_project_service" "storage" {
-  service            = "storage.googleapis.com"
+# Foundation APIs: everything else depends on them, so they're enabled here, before infra/ ever runs.
+# infra/ reads the project (data "google_project") while planning, which needs Resource Manager; and it enables
+# its own APIs through Service Usage. Enabling these from infra/ itself would only happen at apply time: too late.
+resource "google_project_service" "foundation" {
+  for_each = toset([
+    "storage.googleapis.com",              # the state bucket
+    "cloudresourcemanager.googleapis.com", # reading project metadata (infra/ data sources)
+    "serviceusage.googleapis.com",         # enabling the other APIs
+  ])
+
+  service            = each.value
   disable_on_destroy = false
+}
+
+# The Storage API used to be a single resource; this keeps the existing state (no disable/re-enable).
+moved {
+  from = google_project_service.storage
+  to   = google_project_service.foundation["storage.googleapis.com"]
 }
 
 resource "google_storage_bucket" "state" {
@@ -34,5 +49,5 @@ resource "google_storage_bucket" "state" {
     managed-by = "opentofu"
   }
 
-  depends_on = [google_project_service.storage]
+  depends_on = [google_project_service.foundation]
 }

@@ -8,7 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 - **Infrastructure as code** (`infra/`, OpenTofu) for Google Cloud Run in europe-west1:
-  - a GCS state bucket (`infra/bootstrap/`)
+  - a GCS state bucket and the foundation APIs (Storage, Resource Manager, Service Usage) in `infra/bootstrap/`, so `infra/` can plan in a fresh project
   - Artifact Registry with image cleanup
   - runtime and deployer service accounts with resource-scoped roles only
   - **Workload Identity Federation**: no service-account keys. It trusts only this repository's `deploy.yml`, on `main`/`v*` tags, by numeric repository and owner ID.
